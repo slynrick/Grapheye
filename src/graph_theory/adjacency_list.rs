@@ -1,12 +1,19 @@
 use std::fmt;
 use super::graph::Graph;
 
-pub struct Node {
-    num_neighborhood: u32,
-    
+
+// yay type aliases!
+type NodeLink = Option<Box<Node>>;
+
+struct Node {
+    elem: i32,
+    next: NodeLink,
 }
 
 pub struct AdjacencyList {
+    m: u32,
+    n: u32,
+    L: NodeLink,
 }
 
 impl AdjacencyList {
@@ -21,7 +28,11 @@ impl fmt::Display for AdjacencyList {
 
 impl Graph for AdjacencyList {
     fn new(m: u32, n: u32) -> AdjacencyList {
-        AdjacencyList {}
+        AdjacencyList {
+            m,
+            n,
+            L: None
+        }
     }
 
     fn add_edge(&mut self, node1: u32, node2: u32) {
