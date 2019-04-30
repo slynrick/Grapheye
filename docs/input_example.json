@@ -1,0 +1,12 @@
+{
+    "nome": "GRAFO_ALEATORIO_GRUPO1_N_3",
+    "vertices": [
+        "1",
+        "2",
+        "3"
+    ],
+    "arestas": [
+        ["1", "2"],
+        ["2", "3"]
+    ]
+}
