@@ -1,20 +1,61 @@
 use std::fmt;
 use super::graph::{Graph, GraphJson};
-use serde_json::{Result, Value, json};
 
 #[derive(Serialize, Deserialize)]
 pub struct AdjacencyMatrix {
+    name: String,
     m: u32,
     n: u32,
     M : Vec< Vec<bool> >
 }
 
 impl AdjacencyMatrix {
-    fn new(m: u32, n: u32) -> AdjacencyMatrix {
+    fn new(m: u32, n: u32, name: String) -> AdjacencyMatrix {
         AdjacencyMatrix {
+            name,
             m,
             n,
             M : vec![vec![false; n as usize]; n as usize]
+        }
+    }
+
+    pub fn from_json(data: String) -> AdjacencyMatrix {
+        let json: GraphJson = serde_json::from_str(&data[..]).unwrap();
+        let mut obj = AdjacencyMatrix {
+            name: json.nome,
+            m: 0,
+            n: json.vertices.len() as u32,
+            M : vec![vec![false; json.vertices.len()]; json.vertices.len()]
+        };
+        for r in json.arestas.iter() {
+            let node1 = r[0].parse::<u32>().unwrap() - 1;
+            let node2 = r[1].parse::<u32>().unwrap() - 1;
+            obj.add_edge(node1, node2);
+        }
+        obj
+    }
+
+    pub fn get_GraphJson(&self) -> GraphJson {
+        let mut nodes = vec![String::new(); self.n as usize];
+        let mut edges = vec![Vec::new(); 0];
+        for n in 0..self.n {
+            nodes[n as usize] = (n+1).to_string();
+            for r in self.M[n as usize].iter()
+                                        .enumerate()
+                                        .filter(|data| *data.1 == true)
+                                        .map(|data| data.0 as u32) {
+                let (node1, node2) = if n > r { (r + 1, n + 1) } else { (n + 1, r + 1) };
+                if !edges.iter().any(|x| x[0] == node1.to_string() && x[1] == node2.to_string()) {
+                    edges.push(vec![node1.to_string(), node2.to_string()])
+                }
+            }
+        }
+        GraphJson {
+            nome: (*self.name).to_string(),
+            vertices: nodes,
+            arestas: edges,
+            par_vertices: Vec::new(),
+            par_arestas: Vec::new()
         }
     }
 }
@@ -27,35 +68,6 @@ impl fmt::Display for AdjacencyMatrix {
 }
 
 impl Graph for AdjacencyMatrix {
-
-    fn read_json(&mut self, data: String) {
-        let json: GraphJson = serde_json::from_str(&data[..]).unwrap();
-        for r in json.arestas.iter() {
-            let node1 = r[0].parse::<usize>().unwrap();
-            let node2 = r[1].parse::<usize>().unwrap();
-            self.M[node1][node2] = true;
-            self.M[node2][node1] = true;
-        }
-    }
-
-    fn write_json(&self) -> String {
-        let mut N = vec![String::new(); self.n as usize];
-        let mut M = vec![Vec::new(); 0];
-        for n in 0..self.n {
-            N[n as usize] = (n+1).to_string();
-            for r in self.M[n as usize].iter()
-                                        .enumerate()
-                                        .filter(|data| *data.1 == true)
-                                        .map(|data| data.0 as u32) {
-                M.push(vec![(r+1).to_string(), (n+1).to_string()])
-            }
-        }
-        json!({
-            "nome": "RESPONSE-RUST-ROCKET",
-            "vertices": N,
-            "arestas": M
-        }).to_string()
-    }
 
     fn add_edge(&mut self, node1: u32, node2: u32) {
         self.M[node1 as usize][node2 as usize] = true;

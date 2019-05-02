@@ -1,38 +1,156 @@
 
 #![feature(proc_macro_hygiene, decl_macro)]
+#![feature(duration_float)]
 #[macro_use] extern crate rocket;
 
 use std::io;
-use rocket::response::{NamedFile};
-use serde_json::{Result, Value, json};
-use rust_graph_theory::graph_theory::adjacency_list;
-use rust_graph_theory::graph_theory::adjacency_matrix;
+use std::time::Instant;
+use rocket::response::NamedFile;
+use serde_json::json;
+use rust_graph_theory::graph_theory::graph::Graph;
+use rust_graph_theory::graph_theory::adjacency_list::AdjacencyList;
+use rust_graph_theory::graph_theory::adjacency_matrix::AdjacencyMatrix;
+use rust_graph_theory::graph_theory::graph::GraphJson;
 
-#[get("/submit", data = "<var>")]
-fn submit(var: String) {
-    let v: Value = serde_json::from_str(&var[..]).unwrap();
-    print!("{:?}", v["nome"]);
+// API
+
+#[post("/read/<method>", data = "<var>")]
+fn read(method: String, var: String) -> String {
+    let start = Instant::now();
+    if method == "AdjacencyList" {
+        let x = AdjacencyList::from_json(var);
+        json!({ "status": "OK", "duration": start.elapsed().as_secs_f64(), "data": x.get_GraphJson() }).to_string()
+    } else if method == "AdjacencyMatrix"{
+        let x = AdjacencyMatrix::from_json(var);
+        json!({ "status": "OK", "duration": start.elapsed().as_secs_f64(), "data": x.get_GraphJson() }).to_string()
+    } else {
+        json!({ "status": "FAIL"}).to_string()
+    }
 }
+
+#[post("/edge/add/<method>", data = "<var>")]
+fn add_edge(method: String, var: String) -> String {
+    let start = Instant::now();
+    let json: GraphJson = serde_json::from_str(&var[..]).unwrap();
+    if method == "AdjacencyList" {
+        let mut x = AdjacencyList::from_json(var);
+        for r in json.par_arestas.iter() {
+            let node1 = r[0].parse::<u32>().unwrap() - 1;
+            let node2 = r[1].parse::<u32>().unwrap() - 1;
+            x.add_edge(node1, node2);
+        } 
+        json!({ "status": "OK", "duration": start.elapsed().as_secs_f64(), "data": x.get_GraphJson() }).to_string()
+    } else if method == "AdjacencyMatrix"{
+        let mut x = AdjacencyMatrix::from_json(var);
+        for r in json.par_arestas.iter() {
+            let node1 = r[0].parse::<u32>().unwrap() - 1;
+            let node2 = r[1].parse::<u32>().unwrap() - 1;
+            x.add_edge(node1, node2);
+        }
+        json!({ "status": "OK", "duration": start.elapsed().as_secs_f64(), "data": x.get_GraphJson() }).to_string()
+    } else {
+        json!({ "status": "FAIL"}).to_string()
+    }
+}
+
+#[post("/edge/remove/<method>", data = "<var>")]
+fn rm_edge(method: String, var: String) -> String {
+    let start = Instant::now();
+    let json: GraphJson = serde_json::from_str(&var[..]).unwrap();
+    if method == "AdjacencyList" {
+        let mut x = AdjacencyList::from_json(var);
+        for r in json.par_arestas.iter() {
+            let node1 = r[0].parse::<u32>().unwrap() - 1;
+            let node2 = r[1].parse::<u32>().unwrap() - 1;
+            x.rm_edge(node1, node2);
+        } 
+        json!({ "status": "OK", "duration": start.elapsed().as_secs_f64(), "data": x.get_GraphJson() }).to_string()
+    } else if method == "AdjacencyMatrix"{
+        let mut x = AdjacencyMatrix::from_json(var);
+        for r in json.par_arestas.iter() {
+            let node1 = r[0].parse::<u32>().unwrap() - 1;
+            let node2 = r[1].parse::<u32>().unwrap() - 1;
+            x.rm_edge(node1, node2);
+        }
+        json!({ "status": "OK", "duration": start.elapsed().as_secs_f64(), "data": x.get_GraphJson() }).to_string()
+    } else {
+        json!({ "status": "FAIL"}).to_string()
+    }
+}
+
+#[post("/node/add/<method>", data = "<var>")]
+fn add_node(method: String, var: String) -> String {
+    let start = Instant::now();
+    let json: GraphJson = serde_json::from_str(&var[..]).unwrap();
+    if method == "AdjacencyList" {
+        let mut x = AdjacencyList::from_json(var);
+        for _r in json.par_vertices.iter() {
+            //let node = r.parse::<u32>().unwrap() - 1;
+            x.add_node();
+        } 
+        json!({ "status": "OK", "duration": start.elapsed().as_secs_f64(), "data": x.get_GraphJson() }).to_string()
+    } else if method == "AdjacencyMatrix"{
+        let mut x = AdjacencyMatrix::from_json(var);
+        for _r in json.par_vertices.iter() {
+            //let node = r.parse::<u32>().unwrap() - 1;
+            x.add_node();
+        }
+        json!({ "status": "OK", "duration": start.elapsed().as_secs_f64(), "data": x.get_GraphJson() }).to_string()
+    } else {
+        json!({ "status": "FAIL"}).to_string()
+    }
+}
+
+#[post("/node/remove/<method>", data = "<var>")]
+fn rm_node(method: String, var: String) -> String {
+    let start = Instant::now();
+    let json: GraphJson = serde_json::from_str(&var[..]).unwrap();
+    if method == "AdjacencyList" {
+        let mut x = AdjacencyList::from_json(var);
+        for r in json.par_vertices.iter() {
+            let node = r.parse::<u32>().unwrap() - 1;
+            x.rm_node(node);
+        } 
+        json!({ "status": "OK", "duration": start.elapsed().as_secs_f64(), "data": x.get_GraphJson() }).to_string()
+    } else if method == "AdjacencyMatrix"{
+        let mut x = AdjacencyMatrix::from_json(var);
+        for r in json.par_vertices.iter() {
+            let node = r.parse::<u32>().unwrap() - 1;
+            x.rm_node(node);
+        }
+        json!({ "status": "OK", "duration": start.elapsed().as_secs_f64(), "data": x.get_GraphJson() }).to_string()
+    } else {
+        json!({ "status": "FAIL"}).to_string()
+    }
+}
+
+#[post("/node/neighborhood/<method>/<node>", data = "<var>")]
+fn neighborhood(method: String, node: u32, var: String) -> String {
+    let start = Instant::now();
+    if method == "AdjacencyList" {
+        let x = AdjacencyList::from_json(var);
+        let nh : Vec<u32> = x.get_neighborhood(node-1).iter().map(|x| x+1).collect();
+        json!({ "status": "OK", "duration": start.elapsed().as_secs_f64(), "data": nh }).to_string()
+    } else if method == "AdjacencyMatrix"{
+        let x = AdjacencyMatrix::from_json(var);
+        let nh : Vec<u32> = x.get_neighborhood(node-1).iter().map(|x| x+1).collect();
+        json!({ "status": "OK", "duration": start.elapsed().as_secs_f64(), "data": nh }).to_string()
+    } else {
+        json!({ "status": "FAIL"}).to_string()
+    }
+}
+
+// FRONT-END
 
 #[get("/")]
 fn index() -> io::Result<NamedFile> {
     NamedFile::open("public/index.html")
 }
 
-#[get("/json")]
-fn json() -> String {
-    json!({ "hi": "world" }).to_string()
-}
-
-#[get("/teste")]
-fn teste2() -> String {
-    let x = adjacency_list::AdjacencyList::new(10,10);
-    json!({ "hi": 5, "teste": x }).to_string()
-}
-
 fn main() {
     rocket::ignite()
         .mount("/", routes![index])
-        .mount("/api", routes![json,teste2, submit])
+        .mount("/api", routes![read])
+        .mount("/api/exec", routes![add_edge, rm_edge, add_node, rm_node, neighborhood])
     .launch();
 }
