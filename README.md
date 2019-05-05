@@ -74,6 +74,7 @@ Remmember that the options fo the keys below:
 ```html
 <method> : AdjacencyList or AdjacencyMatrix
 <node> : Number of the target node being 1 the first
+<nodes> : Number of nodes desired
 ```
 
 Below the API and a explanation of those commands:
@@ -91,4 +92,6 @@ Read a graph from data inside the post. Using the data format shown above.
 /api/exec/node/remove/<method>: Return a graph with the node removed from the graph sended by the post. Using the data format shown above.
 
 /api/exec/node/neighborhood/<method>/<node> : Return an array with the neighborhood of the requested node from the graph sended by the post. Using the data format shown above.
+
+/api/exec/generate/<nodes> : Return a graph generated with the number of nodes requested and random edges generated from 0 to complete graph. 
 ```

@@ -1,10 +1,13 @@
 
 #![feature(proc_macro_hygiene, decl_macro)]
 #![feature(duration_float)]
+#![feature(rustc_private)]
 #[macro_use] extern crate rocket;
+extern crate rand;
 
 use std::io;
 use std::time::Instant;
+use rand::Rng;
 use rocket::response::NamedFile;
 use serde_json::json;
 use rust_graph_theory::graph_theory::graph::Graph;
@@ -140,6 +143,35 @@ fn neighborhood(method: String, node: u32, var: String) -> String {
     }
 }
 
+
+#[get("/generate/<nodes>")]
+fn generate_random_graphs(nodes: u32) -> String {
+    let mut rng = rand::thread_rng();
+    let edges = rng.gen::<u32>() % ( nodes*(nodes-1)/2 + 1) ;
+    let mut nodes_v = vec![String::new(); nodes as usize];
+    let mut edges_v = vec![Vec::new(); 0];
+    for n in 0..nodes {
+        nodes_v[n as usize] = (n+1).to_string();
+    }
+    for r in 0..edges {
+        let tmp1 = rng.gen::<u32>() % nodes;
+        let tmp2 = rng.gen::<u32>() % nodes;
+        let (node1, node2) = if tmp1 > tmp2 { (tmp2 + 1, tmp1 + 1) } else { (tmp1 + 1, tmp2 + 1) };
+        if !edges_v.iter().any(|x| x[0] == node1.to_string() && x[1] == node2.to_string()) && node1 != node2 {
+            edges_v.push(vec![node1.to_string(), node2.to_string()]);
+        }
+    }
+    let new_graph = GraphJson {
+        nome: format!("GRAFO_ALEATORIO_N{}_M{}",
+               nodes_v.len(), edges_v.len()),
+        vertices: nodes_v,
+        arestas: edges_v,
+        par_vertices: Vec::new(),
+        par_arestas: Vec::new()
+    };
+    json!(new_graph).to_string()
+}
+
 // FRONT-END
 
 #[get("/")]
@@ -151,6 +183,6 @@ fn main() {
     rocket::ignite()
         .mount("/", routes![index])
         .mount("/api", routes![read])
-        .mount("/api/exec", routes![add_edge, rm_edge, add_node, rm_node, neighborhood])
+        .mount("/api/exec", routes![add_edge, rm_edge, add_node, rm_node, neighborhood, generate_random_graphs])
     .launch();
 }
