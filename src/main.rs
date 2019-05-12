@@ -6,6 +6,7 @@
 extern crate rand;
 
 use std::io;
+use std::path::{Path, PathBuf};
 use std::time::Instant;
 use rand::Rng;
 use rocket::response::NamedFile;
@@ -174,14 +175,19 @@ fn generate_random_graphs(nodes: u32) -> String {
 
 // FRONT-END
 
+#[get("/public/src/<file..>")]
+fn file(file : PathBuf) -> Option<NamedFile> {
+    NamedFile::open(Path::new("public/src/").join(file)).ok()
+}
+
 #[get("/")]
 fn index() -> io::Result<NamedFile> {
-    NamedFile::open("public/index.html")
+    NamedFile::open("public/src/index.html")
 }
 
 fn main() {
     rocket::ignite()
-        .mount("/", routes![index])
+        .mount("/", routes![index, file])
         .mount("/api", routes![read])
         .mount("/api/exec", routes![add_edge, rm_edge, add_node, rm_node, neighborhood, generate_random_graphs])
     .launch();
