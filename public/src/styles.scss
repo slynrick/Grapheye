@@ -1,0 +1,18 @@
+/* Add application styles & imports to this file! */
+html, body {
+    margin: 0; 
+    height: 100%; 
+    overflow: hidden;
+    background-color: #10171e;
+}
+
+.side-menu {
+    margin: 6.5%;
+    background-color: #15202b;
+    background-clip: inherit;
+    border: 1px solid #38444d;
+    line-height: inherit;
+    p{
+        color: #fff;
+    }
+}
