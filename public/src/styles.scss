@@ -7,11 +7,13 @@ html, body {
 }
 
 .side-menu {
-    margin: 6.5%;
+    margin-top: 6.5%;
+    margin-left: 2%;
     background-color: #15202b;
     background-clip: inherit;
     border: 1px solid #38444d;
     line-height: inherit;
+    border-radius: 4px;
     p{
         color: #fff;
     }

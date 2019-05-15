@@ -11,12 +11,11 @@ import { GraphService } from './graph/graph.service';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { TopoComponent } from './core/topo/topo.component';
-import { GraphSideMenuComponent } from './graph/graph-side-menu/graph-side-menu.component';
 
 
 @NgModule({
   imports:      [ BrowserModule, FormsModule, NgxGraphModule, NgxChartsModule,BrowserAnimationsModule, CommonModule, HttpClientModule ],
-  declarations: [ AppComponent, GraphComponent, TopoComponent, GraphSideMenuComponent ],
+  declarations: [ AppComponent, GraphComponent, TopoComponent ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   bootstrap:    [ AppComponent ],
   providers: [GraphService]

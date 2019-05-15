@@ -1,15 +1,53 @@
 
 <div class="row">
 	<div class="col-3">
-		<og-graph-side-menu></og-graph-side-menu>
+		<div class="side-menu margin-menu">
+			<div class="form-group">
+				<div class="menu-option">
+					<label for="exampleInputEmail1">Layout</label>
+					<select class="form-control">
+						<option selected>Dagre</option>
+						<option value="2">D3 Force Directed</option>
+						<option value="3">Cola Force Directed</option>
+					</select>
+				</div>
+				<div class="menu-option">
+					<div class="custom-control custom-switch">
+						<input type="checkbox" class="custom-control-input" id="customSwitch1">
+						<label class="custom-control-label" for="customSwitch1">Draggable</label>
+					</div>
+				</div>
+				<div class="menu-option">
+					<div class="custom-control custom-switch">
+						<input type="checkbox" class="custom-control-input" id="customSwitch2">
+						<label class="custom-control-label" for="customSwitch2">Enable Zoom</label>
+					</div>
+				</div>
+				<div class="menu-option">
+					<button type="submit" class="btn btn-primary mb-2" (click)="centerGraph()" >Center</button>
+					<button type="submit" class="btn btn-primary mb-2"  (click)="updateGraph()">Update</button>
+				</div>
+				<div class="menu-option">
+					<label for="exampleInputEmail1">New Node</label>
+					<div class="input-group">
+						<input type="text" maxlength="2" class="form-control mb-2 input-text" id="inlineFormInput" [(ngModel)]="id" placeholder="Label for node">
+						<div class="input-group-append">
+							<button type="button" class="btn btn-info" (click)="addNode()">Add</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
 	</div>
-	<div class="col">
+	<div class="col-9">
 		<div class="page">
 			<ngx-graph
 				[links]="graphs.edges"
 				[nodes]="graphs.nodes"
 				[curve]="curve"
-				[draggingEnabled]="false">
+				[center$]="center$"
+				[update$]="update$"
+				[draggingEnabled]="true">
 				<ng-template #nodeTemplate let-node>
 				<svg:g class="node">
 					<svg:circle [attr.r]="node.dimension.width/2" [attr.cx]="node.dimension.width/2" [attr.cy]="node.dimension.width/2" [attr.fill]="node.data.color" />
