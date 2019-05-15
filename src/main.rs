@@ -10,6 +10,7 @@ use std::path::{Path, PathBuf};
 use std::time::Instant;
 use rand::Rng;
 use rocket::response::NamedFile;
+use rocket_cors::{AllowedHeaders, AllowedOrigins, Error};
 use serde_json::json;
 use rust_graph_theory::graph_theory::graph::Graph;
 use rust_graph_theory::graph_theory::adjacency_list::AdjacencyList;
@@ -186,9 +187,12 @@ fn index() -> io::Result<NamedFile> {
 }
 
 fn main() {
+    let cors = rocket_cors::Cors::default();
+    
     rocket::ignite()
         .mount("/", routes![index, file])
         .mount("/api", routes![read])
         .mount("/api/exec", routes![add_edge, rm_edge, add_node, rm_node, neighborhood, generate_random_graphs])
+        .attach(cors)
     .launch();
 }
