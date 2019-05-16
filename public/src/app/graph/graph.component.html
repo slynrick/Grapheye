@@ -5,22 +5,36 @@
 			<div class="form-group">
 				<div class="menu-option">
 					<label for="exampleInputEmail1">Layout</label>
-					<select class="form-control">
-						<option selected>Dagre</option>
-						<option value="2">D3 Force Directed</option>
-						<option value="3">Cola Force Directed</option>
+					<select class="form-control" [ngModel]="layout" (ngModelChange)="setLayout($event)" name="layout">
+						<option selected *ngFor="let layout of layouts"  [value]="layout.value">
+							{{layout.label}}
+						</option>
+					</select>
+				</div>
+				<div class="menu-option">
+					<label for="exampleInputEmail1">Line Curve Interpolation</label>
+					<select class="form-control" [ngModel]="curveType" (ngModelChange)="setInterpolationType($event)" name="curve">
+						<option selected *ngFor="let interpolation of interpolations"  [value]="interpolation">
+							{{interpolation}}
+						</option>
 					</select>
 				</div>
 				<div class="menu-option">
 					<div class="custom-control custom-switch">
-						<input type="checkbox" class="custom-control-input" id="customSwitch1">
+						<input type="checkbox" class="custom-control-input" id="customSwitch1" (click)="toggleDraggable()" checked>
 						<label class="custom-control-label" for="customSwitch1">Draggable</label>
 					</div>
 				</div>
 				<div class="menu-option">
 					<div class="custom-control custom-switch">
-						<input type="checkbox" class="custom-control-input" id="customSwitch2">
+						<input type="checkbox" class="custom-control-input" id="customSwitch2" (click)="toggleZoom()" checked>
 						<label class="custom-control-label" for="customSwitch2">Enable Zoom</label>
+					</div>
+				</div>
+				<div class="menu-option">
+					<div class="custom-control custom-switch">
+						<input type="checkbox" class="custom-control-input" id="customSwitch3" (click)="togglePanning()" checked>
+						<label class="custom-control-label" for="customSwitch3">Enable Panning</label>
 					</div>
 				</div>
 				<div class="menu-option">
@@ -45,9 +59,12 @@
 				[links]="graphs.edges"
 				[nodes]="graphs.nodes"
 				[curve]="curve"
+				[layout]="layout"
 				[center$]="center$"
 				[update$]="update$"
-				[draggingEnabled]="true">
+				[panningEnabled]="panningEnabled"
+				[enableZoom]="enableZoom"
+				[draggingEnabled]="draggingEnabled">
 				<ng-template #nodeTemplate let-node>
 				<svg:g class="node">
 					<svg:circle [attr.r]="node.dimension.width/2" [attr.cx]="node.dimension.width/2" [attr.cy]="node.dimension.width/2" [attr.fill]="node.data.color" />
