@@ -1,7 +1,7 @@
 #![allow(non_snake_case)]
 use std::fmt;
-use super::graph::{Graph, GraphJson};
-use std::collections::LinkedList;
+use super::graph::{Graph, GraphJson, SearchMatrix};
+use std::collections::{LinkedList, VecDeque};
 
 #[derive(Serialize, Deserialize)]
 pub struct AdjacencyList {
@@ -9,15 +9,23 @@ pub struct AdjacencyList {
     m: u32,
     n: u32,
     L: Vec<LinkedList<u32>>,
+    was_fully_searched: bool,
+    was_shallow_searched: bool,
+    search_matrix: SearchMatrix
 }
+
 
 impl AdjacencyList {
     pub fn new(m: u32, n: u32, name: String) -> AdjacencyList {
+        
         AdjacencyList {
             name,
             m,
             n,
-            L: vec![LinkedList::new(); n as usize]
+            L: vec![LinkedList::new(); n as usize],
+            was_fully_searched: false,
+            was_shallow_searched: false,
+            search_matrix: SearchMatrix::new(n)
         }
     }
 
@@ -27,7 +35,10 @@ impl AdjacencyList {
             name: json.nome,
             m: 0,
             n: json.vertices.len() as u32,
-            L: vec![LinkedList::new(); json.vertices.len()]
+            L: vec![LinkedList::new(); json.vertices.len()],
+            was_fully_searched: false,
+            was_shallow_searched: false,
+            search_matrix: SearchMatrix::new(json.vertices.len() as u32)
         };
         for r in json.arestas.iter() {
             let node1 = r[0].parse::<u32>().unwrap() - 1;
@@ -90,6 +101,8 @@ impl Graph for AdjacencyList {
     fn add_node(&mut self) {
         self.n +=1;
         self.L.push(LinkedList::new());
+        self.search_matrix.add_node();
+        self.search(self.n - 1);
     }
 
     fn rm_node(&mut self, node: u32) {
@@ -98,9 +111,10 @@ impl Graph for AdjacencyList {
             self.L[r as usize] = self.L[r as usize].iter()
                                     .filter(|x| **x != node)
                                     .map(|x| if *x < node { *x } else { *x - 1 })
-                                    .collect()
+                                    .collect();
         }
         self.L.remove(node as usize);
+        self.search_matrix.rm_node(node);
     }
 
     fn get_neighborhood(&self, node: u32) -> Vec<u32> {
@@ -109,5 +123,173 @@ impl Graph for AdjacencyList {
             neighborhood.push(*r);
         }
         neighborhood
+    }
+
+    fn search(&mut self, node: u32) {
+        self.search_matrix.set_visited(node);
+        for r in self.L[node as usize].iter() {
+            for w in self.L[*r as usize].iter()  {
+                if self.search_matrix.is_visited(*r) && 
+                !self.search_matrix.is_explored(*w, *r) {
+                    self.search_matrix.set_explored(*w, *r);
+                    if !self.search_matrix.is_visited(*w) {
+                        self.search_matrix.set_visited(*w);
+                        self.search_matrix.set_discovery(*w, *r);
+                    }
+                }
+            }
+        }
+    }
+
+    fn shallow_search(&mut self) {
+        self.search(0);
+        self.was_shallow_searched = true;
+    }
+
+    fn full_search(&mut self) {
+        for r in 0..self.n {
+            if !self.search_matrix.is_visited(r) {
+                self.search(r);
+            }
+        }
+        self.was_fully_searched = true;
+    }
+
+    fn is_connected(&mut self) -> bool {
+        if !self.was_shallow_searched {
+            self.shallow_search();
+        }
+        for n in 0..self.n {
+            if !self.search_matrix.is_visited(n) {
+                return false
+            }
+        }
+        true
+    }
+
+    fn has_cycle(&mut self) -> bool {
+        if !self.was_fully_searched {
+            self.full_search();
+        }
+        for n in 0..self.n {
+            for r in self.L[n as usize].iter() {
+                if !self.search_matrix.is_discovery(n, *r) {
+                    return true
+                }
+            }
+        }
+        false
+    }
+
+    fn is_forest(&mut self) -> bool {
+        !self.has_cycle()
+    }
+
+    fn is_tree(&mut self) -> bool {
+        self.is_connected() && !self.has_cycle()
+    }
+
+    fn get_forest_generator(&mut self) -> GraphJson {
+        if !self.was_fully_searched {
+            self.full_search();
+        }
+
+        let mut nodes = vec![String::new(); self.n as usize];
+        let mut edges = vec![Vec::new(); 0];
+
+        for n in 0..self.n {
+            nodes[n as usize] = (n+1).to_string();
+            for r in self.L[n as usize].iter() {
+                let (node1, node2) = if n > *r { (*r + 1, n + 1) } else { (n + 1, *r + 1) };
+                if !edges.iter().any(|x| x[0] == node1.to_string() && x[1] == node2.to_string()) {
+                    if self.search_matrix.is_discovery(node1, node2) {
+                        edges.push(vec![node1.to_string(), node2.to_string()])
+                    }
+                }
+            }
+        }
+        self.name.push_str("-ArvoreGeradora");
+        GraphJson {
+            nome: (*self.name).to_string(),
+            vertices: nodes,
+            arestas: edges,
+            par_vertices: Vec::new(),
+            par_arestas: Vec::new()
+        }
+    }
+
+    fn deepfirst_search(&mut self, node: u32) {
+        if self.was_fully_searched {
+            self.search_matrix = SearchMatrix::new(self.n);
+        }
+        self.search_matrix.set_visited(node);
+
+        let mut neighborhood : LinkedList<u32> = self.L[node as usize].iter()
+                                    .map(|x| if *x < node { *x } else { *x - 1 })
+                                    .collect();
+
+        for w in neighborhood.iter_mut() {
+            if self.search_matrix.is_visited(*w) {
+                if !self.search_matrix.is_explored(node, *w) {
+                   self.search_matrix.set_explored(node, *w);
+                }
+            } else {
+                self.search_matrix.set_explored(node, *w);
+                self.search_matrix.set_discovery(node, *w);
+                self.deepfirst_search(*w);
+            }
+        }
+    }
+
+    fn breadthfirst_search(&mut self, node: u32) {
+        if self.was_fully_searched {
+            self.search_matrix = SearchMatrix::new(self.n);
+        }
+        let mut F : VecDeque<u32> = VecDeque::new();
+        self.search_matrix.set_visited(node);
+        F.push_back(node);
+        while F.len() > 0 {
+            let v = F.pop_front().unwrap();
+
+            for w in self.L[v as usize].iter() {
+                if self.search_matrix.is_visited(*w) {
+                    if !self.search_matrix.is_explored(v, *w) {
+                        self.search_matrix.set_explored(v, *w);
+                    }
+                } else {
+                    self.search_matrix.set_explored(v, *w);
+                    self.search_matrix.set_discovery(v, *w);
+                    self.search_matrix.set_visited(*w);
+                    F.push_back(*w);
+                }
+            }
+        }
+    }
+
+    fn define_distances(&mut self, node: u32) {
+        if self.was_fully_searched {
+            self.search_matrix = SearchMatrix::new(self.n);
+        }
+        let mut F : VecDeque<(u32, i32)> = VecDeque::new();
+        let mut Dist = vec![-1; self.n as usize];
+        self.search_matrix.set_visited(node);
+        F.push_back((node, 1));
+        while F.len() > 0 {
+            let (v, lvl) = F.pop_front().unwrap();
+
+            for w in self.L[v as usize].iter() {
+                if self.search_matrix.is_visited(*w) {
+                    if !self.search_matrix.is_explored(v, *w) {
+                        self.search_matrix.set_explored(v, *w);
+                    }
+                } else {
+                    self.search_matrix.set_explored(v, *w);
+                    self.search_matrix.set_discovery(v, *w);
+                    self.search_matrix.set_visited(*w);
+                    Dist[*w as usize] = lvl;
+                    F.push_back((*w, lvl+1));
+                }
+            }
+        }
     }
 }
