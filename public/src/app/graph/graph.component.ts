@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { GraphService } from './graph.service';
-import { graphFromBack } from './graph-from-back';
+import { graphFromBack } from '../dominio/graph-from-back';
 import * as shape from 'd3-shape';
 import { Graph, Node, Layout } from '@swimlane/ngx-graph';
 import { Subject } from 'rxjs';
@@ -12,9 +12,10 @@ import { Subject } from 'rxjs';
 })
 export class GraphComponent implements OnInit {
 
-	id = '';
+    id = '';
+    randomNumber = (Math.floor(Math.random() * 9) + 1).toString();
 
-	graphsFromBack: graphFromBack;
+	graphFromBack: graphFromBack;
 	graphs: Graph = {nodes: [], edges: []};
 	
 	center$: Subject<boolean> = new Subject();
@@ -58,46 +59,48 @@ export class GraphComponent implements OnInit {
 	constructor(private graphService: GraphService) { }
 
 	ngOnInit() {
-		this.getGraph();
+		this.getGraph(this.randomNumber);
 	}
 
+	getGraph(node: string){
+		this.graphService.generateGraph(node).subscribe(graph =>{
+			this.graphFromBack = graph;
+			this.buildGraph();
+            this.update$.next(true);
+            this.id = '';
+		})
+    }
+    
 	addNode(){
-		let node: Node = {id: this.id, label: this.id}
-		this.graphs.nodes.push(node);
-		this.updateGraph();
-		this.id = '';
+		this.graphService.addNode('AdjacencyMatrix', this.graphFromBack).subscribe(graphResponse =>{
+            this.graphFromBack = graphResponse.data;
+            this.buildGraph(); 
+            this.update$.next(true);  
+        })
+        this.update$.next(true);
 	}
 
 	centerGraph() {
-        this.center$.next(true);
+    	this.center$.next(true);
 	}
 
 	updateGraph() {
         this.update$.next(true);
     }
 	
-	getGraph(){
-		this.graphService.getGraph().subscribe(graph =>{
-			this.graphsFromBack = graph;
-			this.buildGraph();
-		})
-		this.update$.next(true);
-	}
-	
 	buildGraph() {
-		this.graphs.nodes = this.graphsFromBack.vertices.map((vertice)=>{
+		this.graphs.nodes = this.graphFromBack.vertices.map((vertice)=>{
 			return {
 				id: vertice,
 				label: vertice
 			}
-			
 		})
-		this.graphs.edges = this.graphsFromBack.arestas.map((aresta)=>{
+		this.graphs.edges = this.graphFromBack.arestas.map((aresta)=>{
 			return {
 				source: aresta[0],
 				target: aresta[1]
 			}
-		})
+        })
 	}
 
 	toggleDraggable(){
@@ -118,37 +121,37 @@ export class GraphComponent implements OnInit {
 	}
 
 	setInterpolationType(curveType) {
-	this.curveType = curveType;
-	if (curveType === 'Bundle') {
-		this.curve = shape.curveBundle.beta(1);
-	}
-	if (curveType === 'Cardinal') {
-		this.curve = shape.curveCardinal;
-	}
-	if (curveType === 'Catmull Rom') {
-		this.curve = shape.curveCatmullRom;
-	}
-	if (curveType === 'Linear') {
-		this.curve = shape.curveLinear;
-	}
-	if (curveType === 'Monotone X') {
-		this.curve = shape.curveMonotoneX;
-	}
-	if (curveType === 'Monotone Y') {
-		this.curve = shape.curveMonotoneY;
-	}
-	if (curveType === 'Natural') {
-		this.curve = shape.curveNatural;
-	}
-	if (curveType === 'Step') {
-		this.curve = shape.curveStep;
-	}
-	if (curveType === 'Step After') {
-		this.curve = shape.curveStepAfter;
-	}
-	if (curveType === 'Step Before') {
-		this.curve = shape.curveStepBefore;
-	}
+        this.curveType = curveType;
+        if (curveType === 'Bundle') {
+            this.curve = shape.curveBundle.beta(1);
+        }
+        if (curveType === 'Cardinal') {
+            this.curve = shape.curveCardinal;
+        }
+        if (curveType === 'Catmull Rom') {
+            this.curve = shape.curveCatmullRom;
+        }
+        if (curveType === 'Linear') {
+            this.curve = shape.curveLinear;
+        }
+        if (curveType === 'Monotone X') {
+            this.curve = shape.curveMonotoneX;
+        }
+        if (curveType === 'Monotone Y') {
+            this.curve = shape.curveMonotoneY;
+        }
+        if (curveType === 'Natural') {
+            this.curve = shape.curveNatural;
+        }
+        if (curveType === 'Step') {
+            this.curve = shape.curveStep;
+        }
+        if (curveType === 'Step After') {
+            this.curve = shape.curveStepAfter;
+        }
+        if (curveType === 'Step Before') {
+            this.curve = shape.curveStepBefore;
+        }
 	}
 
 }

@@ -9,15 +9,32 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { GraphComponent } from './graph/graph.component';
 import { GraphService } from './graph/graph.service';
 import { CommonModule } from '@angular/common';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { TopoComponent } from './core/topo/topo.component';
 
 
 @NgModule({
-  imports:      [ BrowserModule, FormsModule, NgxGraphModule, NgxChartsModule,BrowserAnimationsModule, CommonModule, HttpClientModule ],
-  declarations: [ AppComponent, GraphComponent, TopoComponent ],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  bootstrap:    [ AppComponent ],
-  providers: [GraphService]
+  imports:      
+    [ 
+        BrowserModule, 
+        FormsModule, 
+        NgxGraphModule,
+        NgxChartsModule,
+        BrowserAnimationsModule, 
+        CommonModule, 
+        HttpClientModule
+    ],
+  declarations: 
+    [ 
+        AppComponent, 
+        GraphComponent, 
+        TopoComponent 
+    ],
+  schemas: 
+    [
+        CUSTOM_ELEMENTS_SCHEMA
+    ],
+  bootstrap: [ AppComponent ],
+  providers: [ GraphService ]
 })
 export class AppModule { }

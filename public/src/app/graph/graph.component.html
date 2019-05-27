@@ -42,11 +42,11 @@
 					<button type="submit" class="btn btn-primary mb-2"  (click)="updateGraph()">Update</button>
 				</div>
 				<div class="menu-option">
-					<label for="exampleInputEmail1">New Node</label>
+					<label for="exampleInputEmail1">Random Graph</label>
 					<div class="input-group">
-						<input type="text" maxlength="2" class="form-control mb-2 input-text" id="inlineFormInput" [(ngModel)]="id" placeholder="Label for node">
+						<input type="text" maxlength="2" class="form-control mb-2 input-text" id="inlineFormInput" [(ngModel)]="id" placeholder="nodes">
 						<div class="input-group-append">
-							<button type="button" class="btn btn-info" (click)="addNode()">Add</button>
+							<button type="button" class="btn btn-info" (click)="getGraph(id)"><i class="fas fa-random"></i></button>
 						</div>
 					</div>
 				</div>

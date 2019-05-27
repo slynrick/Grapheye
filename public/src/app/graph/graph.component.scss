@@ -1,5 +1,4 @@
 .page {
-    //width: 100%;
     height: 82vh;
     overflow: hidden;
     margin-top: 2%;
@@ -10,9 +9,8 @@
   }
 
 .form-group {
-padding: 7px 7px 1px;
-//display: flex;
-//flex-direction: row;
+    padding: 7px 7px 1px;
+
 }
 
 label {
@@ -35,5 +33,5 @@ button {
 }
 
 .input-group{
-    width: 42%;
+    width: 41.7%;
 }
