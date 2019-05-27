@@ -5,12 +5,12 @@
 #[macro_use] extern crate rocket;
 extern crate rand;
 
+use rocket_cors;
 use std::io;
 use std::path::{Path, PathBuf};
 use std::time::Instant;
 use rand::Rng;
 use rocket::response::NamedFile;
-use rocket_cors::{AllowedHeaders, AllowedOrigins, Error};
 use serde_json::json;
 use rust_graph_theory::graph_theory::graph::Graph;
 use rust_graph_theory::graph_theory::adjacency_list::AdjacencyList;
@@ -155,7 +155,7 @@ fn generate_random_graphs(nodes: u32) -> String {
     for n in 0..nodes {
         nodes_v[n as usize] = (n+1).to_string();
     }
-    for r in 0..edges {
+    for _r in 0..edges {
         let tmp1 = rng.gen::<u32>() % nodes;
         let tmp2 = rng.gen::<u32>() % nodes;
         let (node1, node2) = if tmp1 > tmp2 { (tmp2 + 1, tmp1 + 1) } else { (tmp1 + 1, tmp2 + 1) };

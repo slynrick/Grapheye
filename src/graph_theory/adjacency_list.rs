@@ -1,3 +1,4 @@
+#![allow(non_snake_case)]
 use std::fmt;
 use super::graph::{Graph, GraphJson};
 use std::collections::LinkedList;

@@ -1,3 +1,5 @@
+#![allow(non_snake_case)]
+#![allow(dead_code)]
 use std::fmt;
 use super::graph::{Graph, GraphJson};
 
