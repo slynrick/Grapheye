@@ -69,6 +69,14 @@ impl AdjacencyList {
         }
     }
 
+    pub fn get_SearchMatrix(&self) -> SearchMatrix {
+        self.search_matrix.clone()
+    }
+
+    pub fn erase_search(&mut self) {
+        self.search_matrix = SearchMatrix::new(self.n);
+    }
+
 }
 
 impl fmt::Display for AdjacencyList {
@@ -126,19 +134,28 @@ impl Graph for AdjacencyList {
     }
 
     fn search(&mut self, node: u32) {
-        self.search_matrix.set_visited(node);
-        for r in self.L[node as usize].iter() {
-            for w in self.L[*r as usize].iter()  {
-                if self.search_matrix.is_visited(*r) && 
-                !self.search_matrix.is_explored(*w, *r) {
-                    self.search_matrix.set_explored(*w, *r);
-                    if !self.search_matrix.is_visited(*w) {
-                        self.search_matrix.set_visited(*w);
-                        self.search_matrix.set_discovery(*w, *r);
+        let mut selected_node = node;
+        self.search_matrix.set_visited(selected_node);
+        let mut nodes : Vec<u32> = Vec::new();
+        loop {
+            for r in self.L[selected_node as usize].iter() {
+                if !self.search_matrix.is_explored(selected_node, *r) {
+                    self.search_matrix.set_explored(selected_node, *r);
+                    if !self.search_matrix.is_visited(*r) {
+                        nodes.push(*r);
+                        self.search_matrix.set_visited(*r);
+                        self.search_matrix.set_discovery(selected_node, *r);
                     }
                 }
             }
+
+            if nodes.len() <= 0 {
+                break;
+            }
+
+            selected_node = nodes.pop().unwrap();
         }
+        
     }
 
     fn shallow_search(&mut self) {
@@ -202,7 +219,7 @@ impl Graph for AdjacencyList {
             for r in self.L[n as usize].iter() {
                 let (node1, node2) = if n > *r { (*r + 1, n + 1) } else { (n + 1, *r + 1) };
                 if !edges.iter().any(|x| x[0] == node1.to_string() && x[1] == node2.to_string()) {
-                    if self.search_matrix.is_discovery(node1, node2) {
+                    if self.search_matrix.is_discovery(n, *r) {
                         edges.push(vec![node1.to_string(), node2.to_string()])
                     }
                 }
@@ -218,14 +235,13 @@ impl Graph for AdjacencyList {
         }
     }
 
-    fn deepfirst_search(&mut self, node: u32) {
-        if self.was_fully_searched {
-            self.search_matrix = SearchMatrix::new(self.n);
-        }
+    fn deepfirst_search(&mut self, node: u32) -> Vec<Vec<String>>  {
+        let mut stages = vec![Vec::new(); 0];
+
         self.search_matrix.set_visited(node);
 
         let mut neighborhood : LinkedList<u32> = self.L[node as usize].iter()
-                                    .map(|x| if *x < node { *x } else { *x - 1 })
+                                    .map(|x| *x)
                                     .collect();
 
         for w in neighborhood.iter_mut() {
@@ -236,12 +252,17 @@ impl Graph for AdjacencyList {
             } else {
                 self.search_matrix.set_explored(node, *w);
                 self.search_matrix.set_discovery(node, *w);
-                self.deepfirst_search(*w);
+                stages.push(vec![(node + 1).to_string(), (*w + 1).to_string()]);
+                stages.append(&mut self.deepfirst_search(*w));
             }
         }
+
+        stages
     }
 
-    fn breadthfirst_search(&mut self, node: u32) {
+    fn breadthfirst_search(&mut self, node: u32) -> Vec<Vec<String>> {
+        let mut stages = vec![Vec::new(); 0];
+
         if self.was_fully_searched {
             self.search_matrix = SearchMatrix::new(self.n);
         }
@@ -260,13 +281,16 @@ impl Graph for AdjacencyList {
                     self.search_matrix.set_explored(v, *w);
                     self.search_matrix.set_discovery(v, *w);
                     self.search_matrix.set_visited(*w);
+                    stages.push(vec![(v + 1).to_string(), (*w + 1).to_string()]);
                     F.push_back(*w);
                 }
             }
         }
+
+        stages
     }
 
-    fn define_distances(&mut self, node: u32) {
+    fn define_distances(&mut self, node: u32) -> Vec<i32> {
         if self.was_fully_searched {
             self.search_matrix = SearchMatrix::new(self.n);
         }
@@ -291,5 +315,7 @@ impl Graph for AdjacencyList {
                 }
             }
         }
+
+        Dist
     }
 }

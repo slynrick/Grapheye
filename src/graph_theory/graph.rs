@@ -21,7 +21,7 @@ fn default_par_arestas() -> Vec<Vec<String>> {
     Vec::new()
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct SearchMatrix {
     nodes: u32,
     Visited: Vec<bool>,
@@ -106,8 +106,8 @@ pub trait Graph {
     fn is_forest(&mut self) -> bool;
     fn is_tree(&mut self) -> bool;
     fn get_forest_generator(&mut self) -> GraphJson;
-    fn deepfirst_search(&mut self, node: u32);
-    fn breadthfirst_search(&mut self, node: u32);
-    fn define_distances(&mut self, node: u32);
+    fn deepfirst_search(&mut self, node: u32) -> Vec<Vec<String>> ;
+    fn breadthfirst_search(&mut self, node: u32) -> Vec<Vec<String>> ;
+    fn define_distances(&mut self, node: u32) -> Vec<i32>;
 }
 

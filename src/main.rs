@@ -6,30 +6,28 @@
 extern crate rand;
 
 use rocket_cors;
-use std::io;
-use std::path::{Path, PathBuf};
 use std::time::Instant;
 use rand::Rng;
-use rocket::response::NamedFile;
 use serde_json::json;
 use rust_graph_theory::graph_theory::graph::Graph;
 use rust_graph_theory::graph_theory::adjacency_list::AdjacencyList;
 use rust_graph_theory::graph_theory::adjacency_matrix::AdjacencyMatrix;
 use rust_graph_theory::graph_theory::graph::GraphJson;
 
-// API
 
 #[post("/read/<method>", data = "<var>")]
 fn read(method: String, var: String) -> String {
     let start = Instant::now();
-    if method == "AdjacencyList" {
-        let x = AdjacencyList::from_json(var);
-        json!({ "status": "OK", "duration": start.elapsed().as_secs_f64(), "data": x.get_GraphJson() }).to_string()
-    } else if method == "AdjacencyMatrix"{
-        let x = AdjacencyMatrix::from_json(var);
-        json!({ "status": "OK", "duration": start.elapsed().as_secs_f64(), "data": x.get_GraphJson() }).to_string()
-    } else {
-        json!({ "status": "FAIL"}).to_string()
+    match method.as_ref() {
+        "AdjacencyList" => {
+            let x = AdjacencyList::from_json(var);
+            json!({ "status": "OK", "duration": start.elapsed().as_secs_f64(), "data": x.get_GraphJson() }).to_string()
+        },
+        "AdjacencyMatrix" => {
+          let x = AdjacencyMatrix::from_json(var);
+            json!({ "status": "OK", "duration": start.elapsed().as_secs_f64(), "data": x.get_GraphJson() }).to_string()
+        },
+        _ => json!({ "status": "FAIL"}).to_string(),
     }
 }
 
@@ -37,24 +35,26 @@ fn read(method: String, var: String) -> String {
 fn add_edge(method: String, var: String) -> String {
     let start = Instant::now();
     let json: GraphJson = serde_json::from_str(&var[..]).unwrap();
-    if method == "AdjacencyList" {
-        let mut x = AdjacencyList::from_json(var);
-        for r in json.par_arestas.iter() {
-            let node1 = r[0].parse::<u32>().unwrap() - 1;
-            let node2 = r[1].parse::<u32>().unwrap() - 1;
-            x.add_edge(node1, node2);
-        } 
-        json!({ "status": "OK", "duration": start.elapsed().as_secs_f64(), "data": x.get_GraphJson() }).to_string()
-    } else if method == "AdjacencyMatrix"{
-        let mut x = AdjacencyMatrix::from_json(var);
-        for r in json.par_arestas.iter() {
-            let node1 = r[0].parse::<u32>().unwrap() - 1;
-            let node2 = r[1].parse::<u32>().unwrap() - 1;
-            x.add_edge(node1, node2);
-        }
-        json!({ "status": "OK", "duration": start.elapsed().as_secs_f64(), "data": x.get_GraphJson() }).to_string()
-    } else {
-        json!({ "status": "FAIL"}).to_string()
+    match method.as_ref() {
+        "AdjacencyList" => {
+            let mut x = AdjacencyList::from_json(var);
+            for r in json.par_arestas.iter() {
+                let node1 = r[0].parse::<u32>().unwrap() - 1;
+                let node2 = r[1].parse::<u32>().unwrap() - 1;
+                x.add_edge(node1, node2);
+            } 
+            json!({ "status": "OK", "duration": start.elapsed().as_secs_f64(), "data": x.get_GraphJson() }).to_string()
+        },
+        "AdjacencyMatrix" => {
+           let mut x = AdjacencyMatrix::from_json(var);
+            for r in json.par_arestas.iter() {
+                let node1 = r[0].parse::<u32>().unwrap() - 1;
+                let node2 = r[1].parse::<u32>().unwrap() - 1;
+                x.add_edge(node1, node2);
+            }
+            json!({ "status": "OK", "duration": start.elapsed().as_secs_f64(), "data": x.get_GraphJson() }).to_string()
+        },
+        _ => json!({ "status": "FAIL"}).to_string(),
     }
 }
 
@@ -62,24 +62,26 @@ fn add_edge(method: String, var: String) -> String {
 fn rm_edge(method: String, var: String) -> String {
     let start = Instant::now();
     let json: GraphJson = serde_json::from_str(&var[..]).unwrap();
-    if method == "AdjacencyList" {
-        let mut x = AdjacencyList::from_json(var);
-        for r in json.par_arestas.iter() {
-            let node1 = r[0].parse::<u32>().unwrap() - 1;
-            let node2 = r[1].parse::<u32>().unwrap() - 1;
-            x.rm_edge(node1, node2);
-        } 
-        json!({ "status": "OK", "duration": start.elapsed().as_secs_f64(), "data": x.get_GraphJson() }).to_string()
-    } else if method == "AdjacencyMatrix"{
-        let mut x = AdjacencyMatrix::from_json(var);
-        for r in json.par_arestas.iter() {
-            let node1 = r[0].parse::<u32>().unwrap() - 1;
-            let node2 = r[1].parse::<u32>().unwrap() - 1;
-            x.rm_edge(node1, node2);
-        }
-        json!({ "status": "OK", "duration": start.elapsed().as_secs_f64(), "data": x.get_GraphJson() }).to_string()
-    } else {
-        json!({ "status": "FAIL"}).to_string()
+    match method.as_ref() {
+        "AdjacencyList" => {
+            let mut x = AdjacencyList::from_json(var);
+            for r in json.par_arestas.iter() {
+                let node1 = r[0].parse::<u32>().unwrap() - 1;
+                let node2 = r[1].parse::<u32>().unwrap() - 1;
+                x.rm_edge(node1, node2);
+            } 
+            json!({ "status": "OK", "duration": start.elapsed().as_secs_f64(), "data": x.get_GraphJson() }).to_string()
+        },
+        "AdjacencyMatrix" => {
+            let mut x = AdjacencyMatrix::from_json(var);
+            for r in json.par_arestas.iter() {
+                let node1 = r[0].parse::<u32>().unwrap() - 1;
+                let node2 = r[1].parse::<u32>().unwrap() - 1;
+                x.rm_edge(node1, node2);
+            }
+            json!({ "status": "OK", "duration": start.elapsed().as_secs_f64(), "data": x.get_GraphJson() }).to_string()
+        },
+        _ => json!({ "status": "FAIL"}).to_string(),
     }
 }
 
@@ -87,22 +89,24 @@ fn rm_edge(method: String, var: String) -> String {
 fn add_node(method: String, var: String) -> String {
     let start = Instant::now();
     let json: GraphJson = serde_json::from_str(&var[..]).unwrap();
-    if method == "AdjacencyList" {
-        let mut x = AdjacencyList::from_json(var);
-        for _r in json.par_vertices.iter() {
-            //let node = r.parse::<u32>().unwrap() - 1;
-            x.add_node();
-        } 
-        json!({ "status": "OK", "duration": start.elapsed().as_secs_f64(), "data": x.get_GraphJson() }).to_string()
-    } else if method == "AdjacencyMatrix"{
-        let mut x = AdjacencyMatrix::from_json(var);
-        for _r in json.par_vertices.iter() {
-            //let node = r.parse::<u32>().unwrap() - 1;
-            x.add_node();
-        }
-        json!({ "status": "OK", "duration": start.elapsed().as_secs_f64(), "data": x.get_GraphJson() }).to_string()
-    } else {
-        json!({ "status": "FAIL"}).to_string()
+    match method.as_ref() {
+        "AdjacencyList" => {
+            let mut x = AdjacencyList::from_json(var);
+            for _r in json.par_vertices.iter() {
+                //let node = r.parse::<u32>().unwrap() - 1;
+                x.add_node();
+            } 
+            json!({ "status": "OK", "duration": start.elapsed().as_secs_f64(), "data": x.get_GraphJson() }).to_string()
+        },
+        "AdjacencyMatrix" => {
+            let mut x = AdjacencyMatrix::from_json(var);
+            for _r in json.par_vertices.iter() {
+                //let node = r.parse::<u32>().unwrap() - 1;
+                x.add_node();
+            }
+            json!({ "status": "OK", "duration": start.elapsed().as_secs_f64(), "data": x.get_GraphJson() }).to_string()
+        },
+        _ => json!({ "status": "FAIL"}).to_string(),
     }
 }
 
@@ -110,38 +114,42 @@ fn add_node(method: String, var: String) -> String {
 fn rm_node(method: String, var: String) -> String {
     let start = Instant::now();
     let json: GraphJson = serde_json::from_str(&var[..]).unwrap();
-    if method == "AdjacencyList" {
-        let mut x = AdjacencyList::from_json(var);
-        for r in json.par_vertices.iter() {
-            let node = r.parse::<u32>().unwrap() - 1;
-            x.rm_node(node);
-        } 
-        json!({ "status": "OK", "duration": start.elapsed().as_secs_f64(), "data": x.get_GraphJson() }).to_string()
-    } else if method == "AdjacencyMatrix"{
-        let mut x = AdjacencyMatrix::from_json(var);
-        for r in json.par_vertices.iter() {
-            let node = r.parse::<u32>().unwrap() - 1;
-            x.rm_node(node);
-        }
-        json!({ "status": "OK", "duration": start.elapsed().as_secs_f64(), "data": x.get_GraphJson() }).to_string()
-    } else {
-        json!({ "status": "FAIL"}).to_string()
+    match method.as_ref() {
+        "AdjacencyList" => {
+            let mut x = AdjacencyList::from_json(var);
+            for r in json.par_vertices.iter() {
+                let node = r.parse::<u32>().unwrap() - 1;
+                x.rm_node(node);
+            } 
+            json!({ "status": "OK", "duration": start.elapsed().as_secs_f64(), "data": x.get_GraphJson() }).to_string()
+        },
+        "AdjacencyMatrix" => {
+            let mut x = AdjacencyMatrix::from_json(var);
+            for r in json.par_vertices.iter() {
+                let node = r.parse::<u32>().unwrap() - 1;
+                x.rm_node(node);
+            }
+            json!({ "status": "OK", "duration": start.elapsed().as_secs_f64(), "data": x.get_GraphJson() }).to_string()
+        },
+        _ => json!({ "status": "FAIL"}).to_string(),
     }
 }
 
 #[post("/node/neighborhood/<method>/<node>", data = "<var>")]
 fn neighborhood(method: String, node: u32, var: String) -> String {
     let start = Instant::now();
-    if method == "AdjacencyList" {
-        let x = AdjacencyList::from_json(var);
-        let nh : Vec<u32> = x.get_neighborhood(node-1).iter().map(|x| x+1).collect();
-        json!({ "status": "OK", "duration": start.elapsed().as_secs_f64(), "data": nh }).to_string()
-    } else if method == "AdjacencyMatrix"{
-        let x = AdjacencyMatrix::from_json(var);
-        let nh : Vec<u32> = x.get_neighborhood(node-1).iter().map(|x| x+1).collect();
-        json!({ "status": "OK", "duration": start.elapsed().as_secs_f64(), "data": nh }).to_string()
-    } else {
-        json!({ "status": "FAIL"}).to_string()
+    match method.as_ref() {
+        "AdjacencyList" => {
+            let x = AdjacencyList::from_json(var);
+            let nh : Vec<u32> = x.get_neighborhood(node-1).iter().map(|x| x+1).collect();
+            json!({ "status": "OK", "duration": start.elapsed().as_secs_f64(), "data": nh }).to_string()
+        },
+        "AdjacencyMatrix" => {
+            let x = AdjacencyMatrix::from_json(var);
+            let nh : Vec<u32> = x.get_neighborhood(node-1).iter().map(|x| x+1).collect();
+            json!({ "status": "OK", "duration": start.elapsed().as_secs_f64(), "data": nh }).to_string()
+        },
+        _ => json!({ "status": "FAIL"}).to_string(),
     }
 }
 
@@ -174,25 +182,183 @@ fn generate_random_graphs(nodes: u32) -> String {
     json!(new_graph).to_string()
 }
 
-// FRONT-END
-
-#[get("/public/src/<file..>")]
-fn file(file : PathBuf) -> Option<NamedFile> {
-    NamedFile::open(Path::new("public/src/").join(file)).ok()
+#[post("/search/<search_type>/<method>", data = "<var>")]
+fn search(search_type: String, method: String, var: String) -> String {
+    let start = Instant::now();
+    match method.as_ref() {
+        "AdjacencyList" => {
+            let mut status : String = "OK".to_string();
+            let mut x = AdjacencyList::from_json(var);
+            match search_type.as_ref() {
+                "full" => x.full_search(),
+                "shallow" => x.shallow_search(),
+                _ => status = "FAIL".to_string(),
+            }
+        
+            json!({ "status": status, "duration": start.elapsed().as_secs_f64(), "data": x.get_SearchMatrix() }).to_string()
+        },
+        "AdjacencyMatrix" => {
+            let mut status : String = "OK".to_string();
+            let mut x = AdjacencyMatrix::from_json(var);
+            match search_type.as_ref() {
+                "full" => x.full_search(),
+                "shallow" => x.shallow_search(),
+                _ => status = "FAIL".to_string(),
+            }
+        
+            json!({ "status": status, "duration": start.elapsed().as_secs_f64(), "data": x.get_SearchMatrix() }).to_string()
+        },
+        _ => json!({ "status": "FAIL"}).to_string(),
+    }
 }
 
-#[get("/")]
-fn index() -> io::Result<NamedFile> {
-    NamedFile::open("public/src/index.html")
+#[post("/is_connected/<method>", data = "<var>")]
+fn is_connected(method: String, var: String) -> String {
+    let start = Instant::now();
+    match method.as_ref() {
+        "AdjacencyList" => {
+            let mut x = AdjacencyList::from_json(var);
+            json!({ "status": "OK", "duration": start.elapsed().as_secs_f64(), "data": { "is_connected": x.is_connected(), "search_matrix": x.get_SearchMatrix() } }).to_string()
+        },
+        "AdjacencyMatrix" => {
+            let mut x = AdjacencyMatrix::from_json(var);
+            json!({ "status": "OK", "duration": start.elapsed().as_secs_f64(), "data": { "is_connected": x.is_connected(), "search_matrix": x.get_SearchMatrix() } }).to_string()
+        },
+        _ => json!({ "status": "FAIL"}).to_string(),
+    }
+}
+
+#[post("/has_cycle/<method>", data = "<var>")]
+fn has_cycle(method: String, var: String) -> String {
+    let start = Instant::now();
+    match method.as_ref() {
+        "AdjacencyList" => {
+            let mut x = AdjacencyList::from_json(var);
+            json!({ "status": "OK", "duration": start.elapsed().as_secs_f64(), "data": { "has_cycle": x.has_cycle(), "search_matrix": x.get_SearchMatrix() } }).to_string()
+        },
+        "AdjacencyMatrix" => {
+            let mut x = AdjacencyMatrix::from_json(var);
+            json!({ "status": "OK", "duration": start.elapsed().as_secs_f64(), "data": { "has_cycle": x.has_cycle(), "search_matrix": x.get_SearchMatrix() } }).to_string()
+        },
+        _ => json!({ "status": "FAIL"}).to_string(),
+    }
+}
+
+#[post("/is_forest/<method>", data = "<var>")]
+fn is_forest(method: String, var: String) -> String {
+    let start = Instant::now();
+    match method.as_ref() {
+        "AdjacencyList" => {
+            let mut x = AdjacencyList::from_json(var);
+            json!({ "status": "OK", "duration": start.elapsed().as_secs_f64(), "data": { "is_forest": x.is_forest(), "search_matrix": x.get_SearchMatrix() } }).to_string()
+        },
+        "AdjacencyMatrix" => {
+            let mut x = AdjacencyMatrix::from_json(var);
+            json!({ "status": "OK", "duration": start.elapsed().as_secs_f64(), "data": { "is_forest": x.is_forest(), "search_matrix": x.get_SearchMatrix() } }).to_string()
+        },
+        _ => json!({ "status": "FAIL"}).to_string(),
+    }
+}
+
+#[post("/is_tree/<method>", data = "<var>")]
+fn is_tree(method: String, var: String) -> String {
+    let start = Instant::now();
+    match method.as_ref() {
+        "AdjacencyList" => {
+            let mut x = AdjacencyList::from_json(var);
+            json!({ "status": "OK", "duration": start.elapsed().as_secs_f64(), "data": { "is_tree": x.is_tree(), "search_matrix": x.get_SearchMatrix() } }).to_string()
+        },
+        "AdjacencyMatrix" => {
+            let mut x = AdjacencyMatrix::from_json(var);
+            json!({ "status": "OK", "duration": start.elapsed().as_secs_f64(), "data": { "is_tree": x.is_tree(), "search_matrix": x.get_SearchMatrix() } }).to_string()
+        },
+        _ => json!({ "status": "FAIL"}).to_string(),
+    }
+}
+
+#[post("/get_forest_generator/<method>", data = "<var>")]
+fn get_forest_generator(method: String, var: String) -> String {
+    let start = Instant::now();
+    match method.as_ref() {
+        "AdjacencyList" => {
+            let mut x = AdjacencyList::from_json(var);
+            json!({ "status": "OK", "duration": start.elapsed().as_secs_f64(), "data": x.get_forest_generator() }).to_string()
+        },
+        "AdjacencyMatrix" => {
+            let mut x = AdjacencyMatrix::from_json(var);
+            json!({ "status": "OK", "duration": start.elapsed().as_secs_f64(), "data": x.get_forest_generator() }).to_string()
+        },
+        _ => json!({ "status": "FAIL"}).to_string(),
+    }
+}
+
+#[post("/deepfirst_search/<method>/<node>", data = "<var>")]
+fn deepfirst_search(method: String, node: u32, var: String) -> String {
+    let start = Instant::now();
+    match method.as_ref() {
+        "AdjacencyList" => {
+            let mut x = AdjacencyList::from_json(var);
+            json!({ "status": "OK", "duration": start.elapsed().as_secs_f64(), "data": { "stages": x.deepfirst_search(node), "search_matrix": x.get_SearchMatrix() } }).to_string()
+        },
+        "AdjacencyMatrix" => {
+            let mut x = AdjacencyMatrix::from_json(var);
+            json!({ "status": "OK", "duration": start.elapsed().as_secs_f64(), "data": { "stages": x.deepfirst_search(node), "search_matrix": x.get_SearchMatrix() } }).to_string()
+        },
+        _ => json!({ "status": "FAIL"}).to_string(),
+    }
+}
+
+#[post("/breadthfirst_search/<method>/<node>", data = "<var>")]
+fn breadthfirst_search(method: String, node: u32, var: String) -> String {
+    let start = Instant::now();
+    match method.as_ref() {
+        "AdjacencyList" => {
+            let mut x = AdjacencyList::from_json(var);
+            json!({ "status": "OK", "duration": start.elapsed().as_secs_f64(), "data": { "stages": x.breadthfirst_search(node), "search_matrix": x.get_SearchMatrix() } }).to_string()
+        },
+        "AdjacencyMatrix" => {
+            let mut x = AdjacencyMatrix::from_json(var);
+            json!({ "status": "OK", "duration": start.elapsed().as_secs_f64(), "data": { "stages": x.breadthfirst_search(node), "search_matrix": x.get_SearchMatrix() } }).to_string()
+        },
+        _ => json!({ "status": "FAIL"}).to_string(),
+    }
+}
+
+
+#[post("/define_distances/<method>/<node>", data = "<var>")]
+fn define_distances(method: String, node: u32, var: String) -> String {
+    let start = Instant::now();
+    match method.as_ref() {
+        "AdjacencyList" => {
+            let mut x = AdjacencyList::from_json(var);
+            json!({ "status": "OK", "duration": start.elapsed().as_secs_f64(), "data": x.define_distances(node) }).to_string()
+        },
+        "AdjacencyMatrix" => {
+            let mut x = AdjacencyMatrix::from_json(var);
+            json!({ "status": "OK", "duration": start.elapsed().as_secs_f64(), "data": x.define_distances(node) }).to_string()
+        },
+        _ => json!({ "status": "FAIL"}).to_string(),
+    }
 }
 
 fn main() {
     let cors = rocket_cors::Cors::default();
     
     rocket::ignite()
-        .mount("/", routes![index, file])
         .mount("/api", routes![read])
-        .mount("/api/exec", routes![add_edge, rm_edge, add_node, rm_node, neighborhood, generate_random_graphs])
+        .mount("/api/exec", routes![add_edge, rm_edge, 
+                                    add_node, rm_node, 
+                                    neighborhood, 
+                                    generate_random_graphs,
+                                    search,
+                                    is_connected,
+                                    has_cycle,
+                                    is_forest,
+                                    is_tree,
+                                    get_forest_generator,
+                                    deepfirst_search,
+                                    breadthfirst_search,
+                                    define_distances])
         .attach(cors)
     .launch();
 }
