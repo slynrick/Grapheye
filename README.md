@@ -94,4 +94,22 @@ Read a graph from data inside the post. Using the data format shown above.
 /api/exec/node/neighborhood/<method>/<node> : Return an array with the neighborhood of the requested node from the graph sended by the post. Using the data format shown above.
 
 /api/exec/generate/<nodes> : Return a graph generated with the number of nodes requested and random edges generated from 0 to complete graph. 
+
+/api/exec/search/<search_type>/<method> :  Return the SearchMatrix.
+
+/api/exec/is_connected/<method> : Return a boolean, True if the graph is connected and False if not.
+
+/api/exec/has_cycle/<method> : Return a boolean, True if the graph has a cycle and False if not.
+
+/api/exec/is_forest/<method> : Return a boolean, True if the graph is a forest and False if not.
+
+/api/exec/is_tree/<method> : Return a boolean, True if the graph is a tree and False if not.
+
+/api/exec/get_forest_generator/<method> : Return a graph that is the forest that generated the graph sent to the backend.
+
+/api/exec/deepfirst_search/<method>/<node> : Returns the Searchmatrix and the stages of the deep first search on the graph sent starting from the node requested.
+
+/api/exec/breadthfirst_search/<method>/<node> : Returns the Searchmatrix and the stages of the breadth first search on the graph sent starting from the node requested.
+
+/api/exec/define_distances/<method>/<node> : Returns the distance starting from the node requested.
 ```
