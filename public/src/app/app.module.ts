@@ -11,6 +11,10 @@ import { GraphService } from './graph/graph.service';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { TopoComponent } from './core/topo/topo.component';
+import { AppRoutingModule } from './app-routing.module';
+import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
+import { GraphOptionsComponent } from './graph-options/graph-options.component';
+import { GraphViewerComponent } from './graph-viewer/graph-viewer.component';
 
 
 @NgModule({
@@ -22,13 +26,15 @@ import { TopoComponent } from './core/topo/topo.component';
         NgxChartsModule,
         BrowserAnimationsModule, 
         CommonModule, 
-        HttpClientModule
+        HttpClientModule, 
+        AppRoutingModule,
+        NgbModule
     ],
   declarations: 
     [ 
         AppComponent, 
         GraphComponent, 
-        TopoComponent 
+        TopoComponent, GraphOptionsComponent, GraphViewerComponent 
     ],
   schemas: 
     [

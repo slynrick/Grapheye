@@ -3,17 +3,38 @@
 }
 
 span{
-    font-size: 1.5rem;
+    font-size: 1.4rem;
     margin-right: 6px;
     &.title {
-        color: #fff !important;
+        color: whitesmoke !important;
     }
+}
+
+.navbar-brand {
+    margin-right: 0;
 }
 
 .fa-eye {
     color: #fff;
+    position: relative;
+    top: 1.2px;
 }
 
 .navbar{
     border-bottom: 1px solid rgba(0,0,0,0.25);
+    height: 46px;
+    padding: 0rem 1rem 0.1rem;
+}
+.nav-link{
+    padding-right: 0.5rem;
+    padding-left: 0.5rem;
+    padding-bottom: 0.18rem;
+    padding-top: 0;
+}
+
+.nav-tabs, .nav-link.active {
+    color: #fff !important;
+    background-color: #15202b !important;
+    border-color: #38444d #38444d #38444d !important;
+    
 }

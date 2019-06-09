@@ -8,25 +8,6 @@
     border-radius: 4px;
   }
 
-.form-group {
-    padding: 7px 7px 1px;
-
-}
-
-label {
-    color: #fff;
-    margin-bottom: auto;
-    font-size: 0.8rem;
-    font-weight: 500;
-}
-button {
-    margin-right: 8px; 
-}
-
-.menu-option { 
-    padding-bottom: 10px;
-}
-
 .btn-info {
     height: 83%;
     border-radius: 5px;
@@ -34,4 +15,25 @@ button {
 
 .input-group{
     width: 41.7%;
+}
+
+::ng-deep {
+    .nav-tabs {
+        border-bottom: 1px solid #38444d !important;
+        margin-bottom: 5px;
+        .nav-item {
+            .nav-link {
+                color: whitesmoke !important;
+                &.active {
+                    background-color: #15202b;
+                    border-color: #38444d #38444d #15202b !important;
+                    border-left: none;
+                    border-top: none;
+                }
+                &.nav-link:hover {
+                    border-color: #38444d #38444d #15202b !important;
+                }
+            }
+        }
+    }
 }

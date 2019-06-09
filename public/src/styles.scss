@@ -14,7 +14,28 @@ html, body {
     border: 1px solid #38444d;
     line-height: inherit;
     border-radius: 4px;
-    p{
-        color: #fff;
-    }
 }
+
+* {
+    font-family: "Open Sans";
+    font-weight: 400;
+}
+
+.form-group {
+    padding: 7px 7px 1px;
+    .menu-option { 
+        padding-bottom: 10px;
+        button {
+            margin-right: 8px; 
+        }
+        label {
+            color: #fff;
+            margin-bottom: auto;
+            font-size: .9rem;
+            font-weight: 500;
+        }
+    }
+    
+}
+
+

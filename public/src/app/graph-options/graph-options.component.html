@@ -1,0 +1,14 @@
+<div class="form-group">
+    <div class="menu-option">
+        <label for="exampleInputEmail1">Layout</label>
+        <select class="form-control" [ngModel]="layout" (ngModelChange)="setLayout($event)" name="layout">
+            <option selected *ngFor="let layout of layouts"  [value]="layout.value">
+                {{layout.label}}
+            </option>
+        </select>
+    </div>
+    <div class="menu-option">
+        <button type="submit" class="btn btn-primary mb-2" (click)="centerGraph()">Center</button>
+        <button type="submit" class="btn btn-primary mb-2" (click)="updateGraph()">Update</button>
+    </div>
+</div>
