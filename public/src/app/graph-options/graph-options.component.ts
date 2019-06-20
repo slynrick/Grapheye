@@ -40,10 +40,8 @@ export class GraphOptionsComponent implements OnInit {
     }
 
     setLayout(layoutName: string): void {
-        this.layout = layoutName;
-        this.centerGraph();
         this.layoutChange.emit(layoutName);
-
+        this.centerGraph();
     }
 
     centerGraph() {

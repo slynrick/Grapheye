@@ -1,0 +1,41 @@
+<div class="form-group">
+    <div class="menu-option">
+        <label for="exampleInputEmail1">Random Graph</label>
+        <div class="input-group">
+            <input type="text" maxlength="2" class="form-control mb-2 input-text" id="inlineFormInput" [(ngModel)]="id" placeholder="nodes">
+            <div class="input-group-append">
+                <button type="button" class="btn btn-info" (click)="getGraph(id)"><i class="fas fa-random"></i></button>
+            </div>
+        </div>
+    </div>
+    <div class="menu-option">
+        <label for="exampleInputEmail1">Add Node</label>
+        <div class="input-group">
+            <input type="text" maxlength="2" class="form-control mb-2 input-text" id="inlineFormInput" [(ngModel)]="id" placeholder="nodes">
+            <div class="input-group-append">
+                <button type="button" class="btn btn-info" (click)="getGraph(id)"><i class="fas fa-random"></i></button>
+            </div>
+        </div>
+    </div>
+    <div class="menu-option">
+        <label for="exampleInputEmail1">Add Edge</label>
+        <div class="input-group">
+            <div class="input-group">
+                <input type="text" maxlength="2" class="form-control mb-2 input-text" id="inlineFormInput" [(ngModel)]="id" placeholder="nodes">
+                <input type="text" maxlength="2" class="form-control mb-2 input-text" id="inlineFormInput" [(ngModel)]="id" placeholder="nodes">
+                <div class="input-group-append">
+                    <button type="button" class="btn btn-info "><i class="fas fa-random"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="menu-option">
+        <label for="exampleInputEmail1">Get neighborhood</label>
+        <div class="input-group">
+            <input type="text" maxlength="2" class="form-control mb-2 input-text" id="inlineFormInput" [(ngModel)]="id" placeholder="nodes">
+            <div class="input-group-append">
+                <button type="button" class="btn btn-info" (click)="getGraph(id)"><i class="fas fa-random"></i></button>
+            </div>
+        </div>
+    </div>
+</div>

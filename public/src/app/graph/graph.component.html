@@ -13,6 +13,22 @@
                         </og-graph-options>
                     </ng-template>
                 </ngb-tab>
+                <ngb-tab>
+                    <ng-template ngbTabTitle><i class="fas fa-check"></i></ng-template>
+                    <ng-template ngbTabContent>
+                        <og-graph-checkpoint1
+                            [graph]="graphFromBack"
+                            (changeGraph)="atualizaGraph($event)"
+                            >
+                        </og-graph-checkpoint1>
+                    </ng-template>
+                </ngb-tab>
+                <ngb-tab>
+                    <ng-template ngbTabTitle><i class="fas fa-check-double"></i></ng-template>
+                    <ng-template ngbTabContent>
+                        <og-graph-checkpoint2></og-graph-checkpoint2>
+                    </ng-template>
+                </ngb-tab>
             </ngb-tabset>    
 		</div>
 	</div>

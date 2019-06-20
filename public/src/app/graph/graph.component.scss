@@ -6,6 +6,7 @@
     background-color: #15202b;
     border: 1px solid #38444d;
     border-radius: 4px;
+    cursor: alias;
   }
 
 .btn-info {
@@ -23,12 +24,10 @@
         margin-bottom: 5px;
         .nav-item {
             .nav-link {
-                color: whitesmoke !important;
+                color: whitesmoke !important;             
                 &.active {
                     background-color: #15202b;
                     border-color: #38444d #38444d #15202b !important;
-                    border-left: none;
-                    border-top: none;
                 }
                 &.nav-link:hover {
                     border-color: #38444d #38444d #15202b !important;

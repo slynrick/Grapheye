@@ -13,7 +13,7 @@ import { Subject } from 'rxjs';
 export class GraphComponent implements OnInit {
 
     id = '';
-	graphFromBack: graphFromBack;
+	graphFromBack: graphFromBack = new graphFromBack();
 	graph: Graph = {nodes: [], edges: []};
 	
 	center$: Subject<boolean> = new Subject();
@@ -27,7 +27,7 @@ export class GraphComponent implements OnInit {
 	constructor(private graphService: GraphService) { }
 
 	ngOnInit() {
-        const randomNumber = (Math.floor(Math.random() * 9) + 1).toString();
+        const randomNumber = (Math.floor(Math.random() * 6) + 1).toString();
         this.getGraph(randomNumber);
 	}
 
@@ -41,21 +41,19 @@ export class GraphComponent implements OnInit {
 		})
     }
     
-	addNode(){
-		this.graphService.addNode('AdjacencyMatrix', this.graphFromBack).subscribe(graphResponse =>{
-            this.graphFromBack = graphResponse.data;
-            this.buildGraph(); 
-            this.update$.next(true);  
-        })
-        this.update$.next(true);
-	}
-
 	centerGraph() {
     	this.center$.next(true);
 	}
 
 	updateGraph() {
         this.update$.next(true);
+    }
+
+    atualizaGraph(graph: graphFromBack) {
+        this.backAnswer = false;
+        this.graphFromBack = graph;
+        graph.vertices.length == 0 ? this.backAnswer = false : this.backAnswer = true;
+        this.buildGraph();
     }
 	
 	private buildGraph() {
@@ -76,7 +74,8 @@ export class GraphComponent implements OnInit {
 	layoutUpdate(layoutName: string): void {
 		this.layout = layoutName;
 		this.centerGraph();
-	}
+    }
+    
 
 }
 

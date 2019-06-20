@@ -14,7 +14,8 @@ import { TopoComponent } from './core/topo/topo.component';
 import { AppRoutingModule } from './app-routing.module';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import { GraphOptionsComponent } from './graph-options/graph-options.component';
-import { GraphViewerComponent } from './graph-viewer/graph-viewer.component';
+import { GraphCheckpoint1Component } from './graph-checkpoint1/graph-checkpoint1.component';
+import { GraphCheckpoint2Component } from './graph-checkpoint2/graph-checkpoint2.component';
 
 
 @NgModule({
@@ -34,7 +35,7 @@ import { GraphViewerComponent } from './graph-viewer/graph-viewer.component';
     [ 
         AppComponent, 
         GraphComponent, 
-        TopoComponent, GraphOptionsComponent, GraphViewerComponent 
+        TopoComponent, GraphOptionsComponent, GraphCheckpoint1Component, GraphCheckpoint2Component
     ],
   schemas: 
     [
