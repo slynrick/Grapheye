@@ -16,7 +16,7 @@
                 <input type="text" maxlength="2" class="form-control mb-2 input-text" id="inlineFormInput" [(ngModel)]="addSourceEdge" placeholder="nodes">
                 <input type="text" maxlength="2" class="form-control mb-2 input-text" id="inlineFormInput" [(ngModel)]="addTargetEdge" placeholder="nodes">
                 <div class="input-group-append">
-                    <button type="button" class="btn btn-info" (click)="addAresta()"><i class="fas fa-random"></i></button>
+                    <button type="button" class="btn btn-info" (click)="addAresta()"><i class="fas fa-plus-circle"></i></button>
                 </div>
             </div>
         </div>
@@ -28,7 +28,7 @@
                 <input type="text" maxlength="2" class="form-control mb-2 input-text" id="inlineFormInput" [(ngModel)]="removeSourceEdge" placeholder="nodes">
                 <input type="text" maxlength="2" class="form-control mb-2 input-text" id="inlineFormInput" [(ngModel)]="removeTargetEdge" placeholder="nodes">
                 <div class="input-group-append">
-                    <button type="button" class="btn btn-info" (click)="removeAresta()"><i class="fas fa-random"></i></button>
+                    <button type="button" class="btn btn-info" (click)="removeAresta()"><i class="fas fa-minus-circle"></i></button>
                 </div>
             </div>
         </div>
@@ -37,9 +37,9 @@
         <label for="exampleInputEmail1">Get neighborhood</label>
         <div class="input-group">
             <input type="text" maxlength="2" class="form-control mb-2 input-text" id="inlineFormInput" [(ngModel)]="vizinhosNode" placeholder="nodes">
-            <input type="text" class="form-control mb-2 input-text" [value]="neighborhoods" id="inlineFormInput" disabled>
+            <input type="text" class="form-control input-text" [value]="neighborhoods" id="inlineFormInput" disabled>
             <div class="input-group-append">
-                <button type="button" class="btn btn-info" (click)="getVizinhos()"><i class="fas fa-random"></i></button>
+                <button type="button" class="btn btn-info" (click)="getVizinhos()"><i class="fas fa-home"></i><i class="fas fa-home"></i></button>
             </div>
         </div>
     </div>

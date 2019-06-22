@@ -10,7 +10,7 @@ import { graphFromBack } from '../dominio/graph-from-back';
 export class GraphCheckpoint1Component implements OnInit {
 
     @Input() graph: graphFromBack;
-    @Output() changeGraph = new EventEmitter<graphFromBack>()
+    @Output() changeGraph = new EventEmitter<graphFromBack>();
 
     vizinhos: number[] = [];
     node = '';
@@ -73,7 +73,6 @@ export class GraphCheckpoint1Component implements OnInit {
 
     getVizinhos() {
         this.graphService.getVizinhos(this.vizinhosNode, 'AdjacencyList', this.graph).subscribe(res => {
-            console.log(res.data);
             this.vizinhos = res.data;
             res.data.length == 0 ? this.neighborhoods = '0' : this.getNeighborhoods(this.vizinhos);
         })

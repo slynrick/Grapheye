@@ -2,7 +2,7 @@
 <div class="row">
 	<div class="col-3">
 		<div class="side-menu margin-menu">
-            <ngb-tabset>
+            <ngb-tabset [destroyOnHide]="false">
                 <ngb-tab>
                     <ng-template ngbTabTitle><i class="fas fa-wrench"></i></ng-template>
                     <ng-template ngbTabContent>
@@ -26,31 +26,74 @@
                 <ngb-tab>
                     <ng-template ngbTabTitle><i class="fas fa-check-double"></i></ng-template>
                     <ng-template ngbTabContent>
-                        <og-graph-checkpoint2></og-graph-checkpoint2>
+                        <og-graph-checkpoint2
+                            [graph]="graphFromBack"
+                            (secondGraph)="openSecondGraph($event)"
+                            (searchGraph)="openSearchGraph($event)">
+                        </og-graph-checkpoint2>
                     </ng-template>
                 </ngb-tab>
             </ngb-tabset>    
 		</div>
 	</div>
 	<div class="col-9">
-		<div class="page">
-			<ngx-graph *ngIf="backAnswer"
-				[links]="graph.edges"
-				[nodes]="graph.nodes"
-				[curve]="curve"
-				[layout]="layout"
-				[center$]="center$"
-				[update$]="update$"
-				[panningEnabled]="true"
-				[enableZoom]="true"
-				[draggingEnabled]="true">
-				<ng-template #nodeTemplate let-node>
-				<svg:g class="node">
-					<svg:circle [attr.r]="node.dimension.width/2" [attr.cx]="node.dimension.width/2" [attr.cy]="node.dimension.width/2" [attr.fill]="node.data.color" />
-					<svg:text alignment-baseline="central" [attr.x]="10" [attr.y]="node.dimension.height / 2">{{node.label}}</svg:text>
-				</svg:g>
-				</ng-template>
-			</ngx-graph>
+        <i class="fas fa-times" (click)="closeSecond()" *ngIf="hasDeepGraph" title="close second graph"></i>
+        <div class="page" [ngClass]="{'row': hasDeepGraph}" >
+            <div [ngClass]="{'col-6': hasDeepGraph, 'col-border': hasDeepGraph}" class="page-resize">
+                <ngx-graph *ngIf="backAnswer"
+                    [links]="graph.edges"
+                    [nodes]="graph.nodes"
+                    [curve]="curve"
+                    [layout]="layout"
+                    [center$]="center$"
+                    [update$]="update$"
+                    [panningEnabled]="true"
+                    [enableZoom]="true"
+                    [draggingEnabled]="true">
+                    <ng-template #nodeTemplate let-node>
+                    <svg:g class="node">
+                        <svg:circle [attr.r]="node.dimension.width/2" [attr.cx]="node.dimension.width/2" [attr.cy]="node.dimension.width/2" [attr.fill]="node.data.color" />
+                        <svg:text alignment-baseline="central" [attr.x]="10" [attr.y]="node.dimension.height / 2">{{node.label}}</svg:text>
+                    </svg:g>
+                    </ng-template>
+                    <ng-template #linkTemplate let-link>
+                        <svg:g class="edge">
+                            <svg:path class="line" stroke-width="2">
+                            </svg:path>
+                        </svg:g>
+                    </ng-template>
+                </ngx-graph>
+            </div>
+            <div class="col-6" *ngIf="hasDeepGraph">
+                <ngx-graph *ngIf="hasDeepGraph"
+                    [links]="graphSearch.edges"
+                    [nodes]="graphSearch.nodes"
+                    [curve]="curve"
+                    [layout]="layout"
+                    [center$]="center$"
+                    [update$]="update$"
+                    [panningEnabled]="true"
+                    [enableZoom]="true"
+                    [draggingEnabled]="true">
+                    <ng-template #nodeTemplate let-node>
+                    <svg:g class="node">
+                        <svg:circle [attr.r]="node.dimension.width/2" [attr.cx]="node.dimension.width/2" [attr.cy]="node.dimension.width/2" [attr.fill]="node.data.color" />
+                        <svg:text alignment-baseline="central" [attr.x]="10" [attr.y]="node.dimension.height / 2">{{node.label}}</svg:text>
+                    </svg:g>
+                    </ng-template>
+                    <ng-template #linkTemplate let-link>
+                        <svg:g class="edge edge-search">
+                            <svg:path class="line" stroke-width="2">
+                            </svg:path>
+                            <svg:text class="edge-label" text-anchor="middle">
+                                <textPath class="text-path" [attr.href]="'#' + link.id" startOffset="70%">
+                                    {{link.label}}
+                                </textPath>
+                            </svg:text>
+                        </svg:g>
+                    </ng-template>
+                </ngx-graph>
+            </div>
 		</div>
 	</div>
 </div>

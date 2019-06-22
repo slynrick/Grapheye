@@ -1,40 +1,95 @@
 <div class="form-group">
-    <div class="menu-option">
-        <label for="exampleInputEmail1">Random Graph</label>
-        <div class="input-group">
-            <input type="text" maxlength="2" class="form-control mb-2 input-text" id="inlineFormInput" [(ngModel)]="id" placeholder="nodes">
-            <div class="input-group-append">
-                <button type="button" class="btn btn-info" (click)="getGraph(id)"><i class="fas fa-random"></i></button>
+    <div class="row">
+        <div class="menu-option col-12">
+            <div class="input-group ">
+                <button type="button" class="btn btn-info w-100" (click)="getGraphBooleans()">
+               
+                    Get the booleans
+                </button>
             </div>
         </div>
-    </div>
-    <div class="menu-option">
-        <label for="exampleInputEmail1">Add Node</label>
-        <div class="input-group">
-            <input type="text" maxlength="2" class="form-control mb-2 input-text" id="inlineFormInput" [(ngModel)]="id" placeholder="nodes">
-            <div class="input-group-append">
-                <button type="button" class="btn btn-info" (click)="getGraph(id)"><i class="fas fa-random"></i></button>
-            </div>
-        </div>
-    </div>
-    <div class="menu-option">
-        <label for="exampleInputEmail1">Add Edge</label>
-        <div class="input-group">
+        <div class="menu-option col">
+            <label for="exampleInputEmail1">Is connect</label>
             <div class="input-group">
-                <input type="text" maxlength="2" class="form-control mb-2 input-text" id="inlineFormInput" [(ngModel)]="id" placeholder="nodes">
-                <input type="text" maxlength="2" class="form-control mb-2 input-text" id="inlineFormInput" [(ngModel)]="id" placeholder="nodes">
-                <div class="input-group-append">
-                    <button type="button" class="btn btn-info "><i class="fas fa-random"></i></button>
+                <input type="text" value="True"
+                class="form-control mb-2 input-text" id="inlineFormInput" 
+                [ngModel]="connected" placeholder="connected?" disabled>
+            </div>
+        </div>
+        <div class="menu-option col">
+            <label for="exampleInputEmail1">Has cycle</label>
+            <div class="input-group">
+                <input type="text" value="False"
+                class="form-control mb-2 input-text" id="inlineFormInput" 
+                [ngModel]="cycle" placeholder="cycle?" disabled>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="menu-option col">
+            <label for="exampleInputEmail1">Is forest</label>
+            <div class="input-group ">
+                <div class="input-group">
+                    <input type="text" maxlength="2" 
+                    class="form-control mb-2 input-text" id="inlineFormInput" 
+                    [ngModel]="forest" placeholder="forest?" disabled>
                 </div>
             </div>
         </div>
+        <div class="menu-option col">
+            <label for="exampleInputEmail1">Is tree</label>
+            <div class="input-group ">
+                <input type="text" maxlength="2" 
+                class="form-control mb-2 input-text" id="inlineFormInput" 
+                [ngModel]="tree" placeholder="tree?" disabled>
+            </div>
+        </div>
     </div>
     <div class="menu-option">
-        <label for="exampleInputEmail1">Get neighborhood</label>
-        <div class="input-group">
-            <input type="text" maxlength="2" class="form-control mb-2 input-text" id="inlineFormInput" [(ngModel)]="id" placeholder="nodes">
+        <label for="exampleInputEmail1">Deep First Search</label>
+        <div class="input-group ">
+            <input type="text" class="form-control mb-2 input-text" id="inlineFormInput" [(ngModel)]="nodeForDeepSearch" placeholder="node">
             <div class="input-group-append">
-                <button type="button" class="btn btn-info" (click)="getGraph(id)"><i class="fas fa-random"></i></button>
+                <button type="button" class="btn btn-info" (click)="deepfirstSearch()"><i class="fas fa-search-plus"></i></button>
+            </div>
+        </div>
+    </div>
+    <div class="menu-option">
+        <label for="exampleInputEmail1">Breadth First Search</label>
+        <div class="input-group ">
+            <input type="text" class="form-control mb-2 input-text" id="inlineFormInput" [(ngModel)]="nodeForBreadthSearch" placeholder="node">
+            <div class="input-group-append">
+                <button type="button" class="btn btn-info" (click)="breadthfirstSearch()"><i class="fas fa-search-plus"></i></button>
+            </div>
+        </div>
+    </div>
+    <div class="menu-option">
+        <div class="input-group ">
+            <button type="button" class="btn btn-info w-100" (click)="getForestGenerator()">
+                <i class="fas fa-tree"></i>
+                Get forest generator
+                <i class="fas fa-tree"></i>
+            </button>
+        </div>
+    </div>
+    <div class="menu-option">
+        <label for="exampleInputEmail1">Distances</label>
+        <div class="input-group ">
+            <input type="text" class="form-control mb-2 input-text" id="inlineFormInput" [(ngModel)]="nodeDistance" placeholder="node">
+            <div class="input-group-append">
+                <button type="button" class="btn btn-info" (click)="defineDistances()"><i class="fas fa-ruler"></i></button>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="menu-option col-4" *ngFor="let distancia of distances; index as i">
+            <label for="exampleInputEmail1">{{nodeDistance}} to {{i}}</label>
+            <div class="input-group">
+                <div class="input-group">
+                    <input type="text" maxlength="2" 
+                    class="form-control mb-2 input-text" id="inlineFormInput" 
+                    [value]="distancia.toString()" disabled>
+                </div>
             </div>
         </div>
     </div>

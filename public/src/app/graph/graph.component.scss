@@ -9,9 +9,23 @@
     cursor: alias;
   }
 
-.btn-info {
-    height: 83%;
-    border-radius: 5px;
+  .page-resize {
+    height: 82vh;
+    overflow: hidden;
+  }
+
+::ng-deep {
+    .edge-search {
+        stroke: green !important;
+        fill: none !important;
+    }
+}
+::ng-deep {
+    .graph .edge .edge-label {
+        stroke: none;
+        font-size: 20px !important;
+        fill: white !important;
+    }
 }
 
 .input-group{
@@ -35,4 +49,8 @@
             }
         }
     }
+}
+
+.col-border {
+    border-right: solid 1px #38444d;
 }

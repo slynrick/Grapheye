@@ -2,7 +2,7 @@
 html, body {
     margin: 0; 
     height: 100%; 
-    overflow: hidden;
+    overflow-x: hidden;
     background-color: #10171e;
 }
 
@@ -35,7 +35,33 @@ html, body {
             font-weight: 500;
         }
     }
-    
 }
 
+.fa-times {
+    color: #fff;
+    position: absolute;
+    right: 41px;
+    top: 3px;
+    cursor: pointer;
+}
 
+.btn-info {
+    height: 83%;
+    border-radius: 5px;
+    background-color: #07559a !important;
+    border-color: #07559a !important;
+}
+
+.btn-primary {
+    background-color: #07559a !important;
+    border-color: #07559a !important;
+}
+
+.btn-primary:hover {
+    background-color: #368bd6 !important;
+}
+
+.input-group>.form-control:not(:first-child) {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 1px;
+}
