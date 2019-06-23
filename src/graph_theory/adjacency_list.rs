@@ -333,15 +333,13 @@ impl Graph for AdjacencyList {
             let mut u = 0;
             let mut min_cost = u32::max_value();
             for n in 0..T.len() {
-                let mut filtered : LinkedList<(u32, u32)> = self.L[node as usize].iter()
-                                    .filter(|(x, c)| *x == (n as u32))
-                                    .map(|x| *x)
-                                    .collect();
-                let (sel, cost) = filtered.pop_front().unwrap();
-                if !T[n] && cost < min_cost {
-                    u = n;
-                    min_cost = cost;
+                for (sel, cost) in self.L[n as usize].iter() {
+                    if !T[n] && cost < min_cost {
+                        u = n;
+                        min_cost = cost;
+                    }
                 }
+                
             }
             T[u] = true;
 
