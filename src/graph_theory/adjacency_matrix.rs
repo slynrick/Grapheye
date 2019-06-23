@@ -337,15 +337,10 @@ impl Graph for AdjacencyMatrix {
             let mut u = 0;
             let mut min_cost = u32::max_value();
             for n in 0..T.len() {
-                for (is_edge, cost) in self.M[n as usize].iter() {
-                    if !is_edge {
-                        continue;
-                    }
-                    if !T[n] && *cost < min_cost {
-                        u = n;
-                        min_cost = *cost;
-                    }
-                }
+                if !T[n] && d[n] < min_cost {
+                    u = n;
+                    min_cost = d[n];
+                } 
             }
             T[u] = true;
 
