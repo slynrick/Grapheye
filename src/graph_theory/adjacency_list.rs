@@ -338,7 +338,7 @@ impl Graph for AdjacencyList {
                                     .map(|x| *x)
                                     .collect();
                 let (sel, cost) = filtered.pop_front().unwrap();
-                if T[n] && cost < min_cost {
+                if !T[n] && cost < min_cost {
                     u = n;
                     min_cost = cost;
                 }
