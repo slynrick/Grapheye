@@ -334,9 +334,9 @@ impl Graph for AdjacencyList {
             let mut min_cost = u32::max_value();
             for n in 0..T.len() {
                 for (sel, cost) in self.L[n as usize].iter() {
-                    if !T[n] && cost < min_cost {
+                    if !T[n] && *cost < min_cost {
                         u = n;
-                        min_cost = cost;
+                        min_cost = *cost;
                     }
                 }
                 

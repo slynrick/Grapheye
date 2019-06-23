@@ -341,9 +341,9 @@ impl Graph for AdjacencyMatrix {
                     if !is_edge {
                         continue;
                     }
-                    if !T[n] && cost < min_cost {
+                    if !T[n] && *cost < min_cost {
                         u = n;
-                        min_cost = cost;
+                        min_cost = *cost;
                     }
                 }
             }
