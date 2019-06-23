@@ -41,7 +41,11 @@ fn add_edge(method: String, var: String) -> String {
             for r in json.par_arestas.iter() {
                 let node1 = r[0].parse::<u32>().unwrap() - 1;
                 let node2 = r[1].parse::<u32>().unwrap() - 1;
-                x.add_edge(node1, node2);
+                if r.len() == 3 {
+                    x.add_edge(node1, node2, r[2].parse::<u32>().unwrap());
+                } else {
+                    x.add_edge(node1, node2, u32::max_value());
+                }
             } 
             json!({ "status": "OK", "duration": start.elapsed().as_secs_f64(), "data": x.get_GraphJson() }).to_string()
         },
@@ -50,7 +54,11 @@ fn add_edge(method: String, var: String) -> String {
             for r in json.par_arestas.iter() {
                 let node1 = r[0].parse::<u32>().unwrap() - 1;
                 let node2 = r[1].parse::<u32>().unwrap() - 1;
-                x.add_edge(node1, node2);
+                if r.len() == 3 {
+                    x.add_edge(node1, node2, r[2].parse::<u32>().unwrap());
+                } else {
+                    x.add_edge(node1, node2, u32::max_value());
+                }
             }
             json!({ "status": "OK", "duration": start.elapsed().as_secs_f64(), "data": x.get_GraphJson() }).to_string()
         },
@@ -341,6 +349,22 @@ fn define_distances(method: String, node: u32, var: String) -> String {
     }
 }
 
+#[post("/dijkstra/<method>/<node>", data = "<var>")]
+fn dijkstra(method: String, node: u32, var: String) -> String {
+    let start = Instant::now();
+    match method.as_ref() {
+        "AdjacencyList" => {
+            let mut x = AdjacencyList::from_json(var);
+            json!({ "status": "OK", "duration": start.elapsed().as_secs_f64(), "data": x.dijkstra(node) }).to_string()
+        },
+        "AdjacencyMatrix" => {
+            let mut x = AdjacencyMatrix::from_json(var);
+            json!({ "status": "OK", "duration": start.elapsed().as_secs_f64(), "data": x.dijkstra(node) }).to_string()
+        },
+        _ => json!({ "status": "FAIL"}).to_string(),
+    }
+}
+
 fn main() {
     let cors = rocket_cors::Cors::default();
     
@@ -358,7 +382,8 @@ fn main() {
                                     get_forest_generator,
                                     deepfirst_search,
                                     breadthfirst_search,
-                                    define_distances])
+                                    define_distances,
+                                    dijkstra])
         .attach(cors)
     .launch();
 }

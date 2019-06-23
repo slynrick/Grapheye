@@ -93,7 +93,7 @@ impl SearchMatrix {
 }
 
 pub trait Graph {
-    fn add_edge(&mut self, node1: u32, node2: u32);
+    fn add_edge(&mut self, node1: u32, node2: u32, cost: u32);
     fn rm_edge(&mut self, node1: u32, node2: u32);
     fn add_node(&mut self);
     fn rm_node(&mut self, node: u32);
@@ -109,5 +109,6 @@ pub trait Graph {
     fn deepfirst_search(&mut self, node: u32) -> Vec<Vec<String>> ;
     fn breadthfirst_search(&mut self, node: u32) -> Vec<Vec<String>> ;
     fn define_distances(&mut self, node: u32) -> Vec<i32>;
+    fn dijkstra(&mut self, node: u32) -> (Vec<u32>, Vec<u32>);
 }
 

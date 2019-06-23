@@ -112,4 +112,6 @@ Read a graph from data inside the post. Using the data format shown above.
 /api/exec/breadthfirst_search/<method>/<node> : Returns the Searchmatrix and the stages of the breadth first search on the graph sent starting from the node requested.
 
 /api/exec/define_distances/<method>/<node> : Returns the distance starting from the node requested.
+
+/api/exec/dijkstra/<method>/<node>: Returns de pair d e P using the node as the start point.
 ```

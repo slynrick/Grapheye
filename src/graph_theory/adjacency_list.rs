@@ -8,7 +8,7 @@ pub struct AdjacencyList {
     name: String,
     m: u32,
     n: u32,
-    L: Vec<LinkedList<u32>>,
+    L: Vec<LinkedList<(u32, u32)>>, // (node, weight)
     was_fully_searched: bool,
     was_shallow_searched: bool,
     search_matrix: SearchMatrix
@@ -43,7 +43,11 @@ impl AdjacencyList {
         for r in json.arestas.iter() {
             let node1 = r[0].parse::<u32>().unwrap() - 1;
             let node2 = r[1].parse::<u32>().unwrap() - 1;
-            obj.add_edge(node1, node2);
+            if r.len() == 3 {
+                obj.add_edge(node1, node2, r[2].parse::<u32>().unwrap());
+            } else {
+                obj.add_edge(node1, node2, u32::max_value());
+            }
         }
         obj
     }
@@ -54,7 +58,7 @@ impl AdjacencyList {
         for n in 0..self.n {
             nodes[n as usize] = (n+1).to_string();
             for r in self.L[n as usize].iter() {
-                let (node1, node2) = if n > *r { (*r + 1, n + 1) } else { (n + 1, *r + 1) };
+                let (node1, node2) = if n > (*r).0 { ((*r).0 + 1, n + 1) } else { (n + 1, (*r).0 + 1) };
                 if !edges.iter().any(|x| x[0] == node1.to_string() && x[1] == node2.to_string()) {
                     edges.push(vec![node1.to_string(), node2.to_string()])
                 }
@@ -88,20 +92,20 @@ impl fmt::Display for AdjacencyList {
 
 impl Graph for AdjacencyList {
 
-    fn add_edge(&mut self, node1: u32, node2: u32) {
+    fn add_edge(&mut self, node1: u32, node2: u32, cost: u32) {
         self.m += 1;
-        self.L[node1 as usize].push_back(node2);
-        self.L[node2 as usize].push_back(node1);
+        self.L[node1 as usize].push_back((node2,cost));
+        self.L[node2 as usize].push_back((node1,cost));
     }
 
     fn rm_edge(&mut self, node1: u32, node2: u32) {
         self.m -= 1;
         self.L[node1 as usize] = self.L[node1 as usize].iter()
-                                    .filter(|x| **x != node2)
+                                    .filter(|x| (**x).0 != node2)
                                     .map(|x| *x)
                                     .collect();
         self.L[node2 as usize] = self.L[node2 as usize].iter()
-                                    .filter(|x| **x != node1)
+                                    .filter(|x| (**x).0 != node1)
                                     .map(|x| *x)
                                     .collect();
     }
@@ -117,8 +121,8 @@ impl Graph for AdjacencyList {
         self.n -= 1;
         for r in 0..self.n {
             self.L[r as usize] = self.L[r as usize].iter()
-                                    .filter(|x| **x != node)
-                                    .map(|x| if *x < node { *x } else { *x - 1 })
+                                    .filter(|x| (**x).0 != node)
+                                    .map(|x| if (*x).0 < node { *x } else { ((*x).0 - 1, (*x).1) })
                                     .collect();
         }
         self.L.remove(node as usize);
@@ -128,7 +132,7 @@ impl Graph for AdjacencyList {
     fn get_neighborhood(&self, node: u32) -> Vec<u32> {
         let mut neighborhood = Vec::new();
         for r in self.L[node as usize].iter() {
-            neighborhood.push(*r);
+            neighborhood.push((*r).0);
         }
         neighborhood
     }
@@ -139,12 +143,12 @@ impl Graph for AdjacencyList {
         let mut nodes : Vec<u32> = Vec::new();
         loop {
             for r in self.L[selected_node as usize].iter() {
-                if !self.search_matrix.is_explored(selected_node, *r) {
-                    self.search_matrix.set_explored(selected_node, *r);
-                    if !self.search_matrix.is_visited(*r) {
-                        nodes.push(*r);
-                        self.search_matrix.set_visited(*r);
-                        self.search_matrix.set_discovery(selected_node, *r);
+                if !self.search_matrix.is_explored(selected_node, (*r).0) {
+                    self.search_matrix.set_explored(selected_node, (*r).0);
+                    if !self.search_matrix.is_visited((*r).0) {
+                        nodes.push((*r).0);
+                        self.search_matrix.set_visited((*r).0);
+                        self.search_matrix.set_discovery(selected_node, (*r).0);
                     }
                 }
             }
@@ -190,7 +194,7 @@ impl Graph for AdjacencyList {
         }
         for n in 0..self.n {
             for r in self.L[n as usize].iter() {
-                if !self.search_matrix.is_discovery(n, *r) {
+                if !self.search_matrix.is_discovery(n, (*r).0) {
                     return true
                 }
             }
@@ -217,9 +221,9 @@ impl Graph for AdjacencyList {
         for n in 0..self.n {
             nodes[n as usize] = (n+1).to_string();
             for r in self.L[n as usize].iter() {
-                let (node1, node2) = if n > *r { (*r + 1, n + 1) } else { (n + 1, *r + 1) };
+                let (node1, node2) = if n > (*r).0 { ((*r).0 + 1, n + 1) } else { (n + 1, (*r).0 + 1) };
                 if !edges.iter().any(|x| x[0] == node1.to_string() && x[1] == node2.to_string()) {
-                    if self.search_matrix.is_discovery(n, *r) {
+                    if self.search_matrix.is_discovery(n, (*r).0) {
                         edges.push(vec![node1.to_string(), node2.to_string()])
                     }
                 }
@@ -241,7 +245,7 @@ impl Graph for AdjacencyList {
         self.search_matrix.set_visited(node);
 
         let mut neighborhood : LinkedList<u32> = self.L[node as usize].iter()
-                                    .map(|x| *x)
+                                    .map(|x| (*x).0)
                                     .collect();
 
         for w in neighborhood.iter_mut() {
@@ -273,16 +277,16 @@ impl Graph for AdjacencyList {
             let v = F.pop_front().unwrap();
 
             for w in self.L[v as usize].iter() {
-                if self.search_matrix.is_visited(*w) {
-                    if !self.search_matrix.is_explored(v, *w) {
-                        self.search_matrix.set_explored(v, *w);
+                if self.search_matrix.is_visited((*w).0) {
+                    if !self.search_matrix.is_explored(v, (*w).0) {
+                        self.search_matrix.set_explored(v, (*w).0);
                     }
                 } else {
-                    self.search_matrix.set_explored(v, *w);
-                    self.search_matrix.set_discovery(v, *w);
-                    self.search_matrix.set_visited(*w);
-                    stages.push(vec![(v + 1).to_string(), (*w + 1).to_string()]);
-                    F.push_back(*w);
+                    self.search_matrix.set_explored(v, (*w).0);
+                    self.search_matrix.set_discovery(v, (*w).0);
+                    self.search_matrix.set_visited((*w).0);
+                    stages.push(vec![(v + 1).to_string(), ((*w).0 + 1).to_string()]);
+                    F.push_back((*w).0);
                 }
             }
         }
@@ -302,20 +306,52 @@ impl Graph for AdjacencyList {
             let (v, lvl) = F.pop_front().unwrap();
 
             for w in self.L[v as usize].iter() {
-                if self.search_matrix.is_visited(*w) {
-                    if !self.search_matrix.is_explored(v, *w) {
-                        self.search_matrix.set_explored(v, *w);
+                if self.search_matrix.is_visited((*w).0) {
+                    if !self.search_matrix.is_explored(v, (*w).0) {
+                        self.search_matrix.set_explored(v, (*w).0);
                     }
                 } else {
-                    self.search_matrix.set_explored(v, *w);
-                    self.search_matrix.set_discovery(v, *w);
-                    self.search_matrix.set_visited(*w);
-                    Dist[*w as usize] = lvl;
-                    F.push_back((*w, lvl+1));
+                    self.search_matrix.set_explored(v, (*w).0);
+                    self.search_matrix.set_discovery(v, (*w).0);
+                    self.search_matrix.set_visited((*w).0);
+                    Dist[(*w).0 as usize] = lvl;
+                    F.push_back(((*w).0, lvl+1));
                 }
             }
         }
 
         Dist
+    }
+
+    fn dijkstra(&mut self, node: u32) -> (Vec<u32>, Vec<u32>) {
+        let mut d = vec![u32::max_value(); self.n as usize];
+        let mut T = vec![false; self.n as usize];
+        let mut P = vec![u32::max_value(); self.n as usize];
+
+        d[node as usize] = 0;
+        for i in 1..self.n {
+            let mut u = 0;
+            let mut min_cost = u32::max_value();
+            for n in 0..T.len() {
+                let mut filtered : LinkedList<(u32, u32)> = self.L[node as usize].iter()
+                                    .filter(|(x, c)| *x == (n as u32))
+                                    .map(|x| *x)
+                                    .collect();
+                let (sel, cost) = filtered.pop_front().unwrap();
+                if T[n] && cost < min_cost {
+                    u = n;
+                    min_cost = cost;
+                }
+            }
+            T[u] = true;
+
+            for (v, cost) in self.L[u].iter() {
+                if d[*v as usize] > d[u] + cost {
+                    d[*v as usize] = d[u] + cost;
+                    P[*v as usize] = u as u32;
+                }
+            }
+        }
+        (d, P)
     }
 }

@@ -9,7 +9,7 @@ pub struct AdjacencyMatrix {
     name: String,
     m: u32,
     n: u32,
-    M : Vec< Vec<bool> >,
+    M : Vec< Vec<(bool, u32)> >,
     was_fully_searched: bool,
     was_shallow_searched: bool,
     search_matrix: SearchMatrix
@@ -21,7 +21,7 @@ impl AdjacencyMatrix {
             name,
             m,
             n,
-            M : vec![vec![false; n as usize]; n as usize],
+            M : vec![vec![(false, u32::max_value()); n as usize]; n as usize],
             was_fully_searched: false,
             was_shallow_searched: false,
             search_matrix: SearchMatrix::new(n)
@@ -34,7 +34,7 @@ impl AdjacencyMatrix {
             name: json.nome,
             m: 0,
             n: json.vertices.len() as u32,
-            M : vec![vec![false; json.vertices.len()]; json.vertices.len()],
+            M : vec![vec![(false, u32::max_value()); json.vertices.len()]; json.vertices.len()],
             was_fully_searched: false,
             was_shallow_searched: false,
             search_matrix: SearchMatrix::new(json.vertices.len() as u32)
@@ -42,7 +42,11 @@ impl AdjacencyMatrix {
         for r in json.arestas.iter() {
             let node1 = r[0].parse::<u32>().unwrap() - 1;
             let node2 = r[1].parse::<u32>().unwrap() - 1;
-            obj.add_edge(node1, node2);
+            if r.len() == 3 {
+                obj.add_edge(node1, node2, r[2].parse::<u32>().unwrap());
+            } else {
+                obj.add_edge(node1, node2, u32::max_value());
+            }
         }
         obj
     }
@@ -54,7 +58,7 @@ impl AdjacencyMatrix {
             nodes[n as usize] = (n+1).to_string();
             for r in self.M[n as usize].iter()
                                         .enumerate()
-                                        .filter(|data| *data.1 == true)
+                                        .filter(|data| (*data.1).0 == true)
                                         .map(|data| data.0 as u32) {
                 let (node1, node2) = if n > r { (r + 1, n + 1) } else { (n + 1, r + 1) };
                 if !edges.iter().any(|x| x[0] == node1.to_string() && x[1] == node2.to_string()) {
@@ -89,23 +93,23 @@ impl fmt::Display for AdjacencyMatrix {
 
 impl Graph for AdjacencyMatrix {
 
-    fn add_edge(&mut self, node1: u32, node2: u32) {
-        self.M[node1 as usize][node2 as usize] = true;
-        self.M[node2 as usize][node1 as usize] = true;
+    fn add_edge(&mut self, node1: u32, node2: u32, cost: u32) {
+        self.M[node1 as usize][node2 as usize] = (true, cost);
+        self.M[node2 as usize][node1 as usize] = (true, cost);
         self.m += 1;
     }
 
     fn rm_edge(&mut self, node1: u32, node2: u32) {
-        self.M[node1 as usize][node2 as usize] = false;
-        self.M[node2 as usize][node1 as usize] = false;
+        self.M[node1 as usize][node2 as usize] = (false, u32::max_value());
+        self.M[node2 as usize][node1 as usize] = (false, u32::max_value());
         self.m -=1;
     }
 
     fn add_node(&mut self) {
         self.n +=1;
-        self.M.push(vec![false; self.n as usize]);
+        self.M.push(vec![(false, u32::max_value()); self.n as usize]);
         for r in self.M.iter_mut() {
-            r.push(false);
+            r.push((false, u32::max_value()));
         }
     }
 
@@ -120,7 +124,7 @@ impl Graph for AdjacencyMatrix {
     fn get_neighborhood(&self, node: u32) -> Vec<u32> {
         self.M[node as usize].iter()
             .enumerate()
-            .filter(|data| *data.1 == true)
+            .filter(|data| (*data.1).0 == true)
             .map(|data| data.0 as u32).collect()
     }
 
@@ -130,7 +134,7 @@ impl Graph for AdjacencyMatrix {
         let mut nodes : Vec<u32> = Vec::new();
         loop {
             for r in 0..self.M[selected_node as usize].len() {
-                if !self.M[selected_node as usize][r] {
+                if !self.M[selected_node as usize][r].0 {
                     continue;
                 }
                 if !self.search_matrix.is_explored(selected_node, r as u32) {
@@ -183,7 +187,7 @@ impl Graph for AdjacencyMatrix {
         }
         for n in 0..self.n {
             for r in 0..self.M[n as usize].len() {
-                if !self.M[n as usize][r] {
+                if !self.M[n as usize][r].0 {
                     continue;
                 }
                 if !self.search_matrix.is_discovery(n, r as u32) {
@@ -213,7 +217,7 @@ impl Graph for AdjacencyMatrix {
         for n in 0..self.n {
             nodes[n as usize] = (n+1).to_string();
             for r in 0..self.M[n as usize].len() {
-                if !self.M[n as usize][r as usize] {
+                if !self.M[n as usize][r as usize].0 {
                     continue;
                 }
                 let (node1, node2) = if n > (r as u32) { ((r + 1) as u32, (n + 1) as u32) } else { ( (n + 1) as u32, (r + 1) as u32) };
@@ -240,7 +244,7 @@ impl Graph for AdjacencyMatrix {
         self.search_matrix.set_visited(node);
 
         for w in 0..self.M[node as usize].len() {
-            if !self.M[node as usize][w] {
+            if !self.M[node as usize][w].0 {
                 continue;
             }
             if self.search_matrix.is_visited(w as u32) {
@@ -271,7 +275,7 @@ impl Graph for AdjacencyMatrix {
             let v = F.pop_front().unwrap();
 
             for w in 0..self.M[v as usize].len() {
-                if !self.M[v as usize][w] {
+                if !self.M[v as usize][w].0 {
                     continue;
                 }
                 if self.search_matrix.is_visited(w as u32) {
@@ -303,7 +307,7 @@ impl Graph for AdjacencyMatrix {
             let (v, lvl) = F.pop_front().unwrap();
 
             for w in 0..self.M[v as usize].len() {
-                if !self.M[v as usize][w] {
+                if !self.M[v as usize][w].0 {
                     continue;
                 }
                 if self.search_matrix.is_visited(w as u32) {
@@ -321,5 +325,38 @@ impl Graph for AdjacencyMatrix {
         }
 
         Dist
+    }
+
+    fn dijkstra(&mut self, node: u32) -> (Vec<u32>, Vec<u32>) {
+        let mut d = vec![u32::max_value(); self.n as usize];
+        let mut T = vec![false; self.n as usize];
+        let mut P = vec![u32::max_value(); self.n as usize];
+
+        d[node as usize] = 0;
+        for i in 1..self.n {
+            let mut u = 0;
+            let mut min_cost = u32::max_value();
+            for n in 0..T.len() {
+                let (is_edge, cost) = self.M[node as usize][n as usize];
+                if !is_edge {
+                    continue;
+                }
+                if T[n] && cost < min_cost {
+                    u = n;
+                    min_cost = cost;
+                }
+            }
+            T[u] = true;
+
+            for (v, (is_edge, cost)) in self.M[u].iter().enumerate() {
+                if *is_edge {
+                    if d[v as usize] > d[u] + cost {
+                        d[v as usize] = d[u] + cost;
+                        P[v as usize] = u as u32;
+                    }
+                }
+            }
+        }
+        (d, P)
     }
 }
