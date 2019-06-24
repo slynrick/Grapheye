@@ -29,6 +29,7 @@ export class GraphComponent implements OnInit {
     
     backAnswer: boolean = false;
     hasDeepGraph: boolean = false;
+    tree = true;
 
 	constructor(private graphService: GraphService) { }
 
@@ -79,6 +80,7 @@ export class GraphComponent implements OnInit {
         this.graphSearchBack = graph;
         this.buildGraph(this.graphSearch, this.graphSearchBack);
         this.hasDeepGraph = true;
+        this.tree = false;
     }
     
     openSearchGraph(graphSearch: graphSearch){
@@ -86,13 +88,12 @@ export class GraphComponent implements OnInit {
         this.graphSearchBack.vertices = this.graphFromBack.vertices;
         this.graphSearchBack.arestas = graphSearch.data.stages;
         this.buildGraph(this.graphSearch, this.graphSearchBack);
-
+        this.tree = true;
         this.hasDeepGraph = true;
     }
     
 	layoutUpdate(layoutName: string): void {
         this.layout = layoutName;
-		this.centerGraph();
     }
     
     closeSecond(){
