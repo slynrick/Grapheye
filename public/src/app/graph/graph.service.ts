@@ -74,5 +74,9 @@ export class GraphService {
         search(metodo: string, searchType:string, graph: graphFromBack){
 			return this.http.post<graphResponse>(environment.url + 'exec/search/' + searchType + '/' + metodo, graph);
         }
+
+        Dijkstra(metodo: string, node:string, graph: graphFromBack){
+			return this.http.post<any>(environment.url + 'exec/dijkstra/' + metodo + '/'+ node, graph);
+        }
         
 }

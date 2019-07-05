@@ -10,5 +10,17 @@
     <div class="menu-option">
         <button type="submit" class="btn btn-primary mb-2" (click)="centerGraph()">Center</button>
         <button type="submit" class="btn btn-primary mb-2" (click)="updateGraph()">Update</button>
+       <!--<button type="submit" class="btn btn-primary mb-2" (click)="cleanGraph()">Clean</button>-->
+    </div>
+    <div class="menu-option">
+        <label for="exampleInputEmail1">Generate random graph</label>
+        <div class="input-group">
+            <div class="input-group">
+                <input type="text" maxlength="2" class="form-control mb-2 input-text" id="inlineFormInput" [(ngModel)]="node" placeholder="nodes">
+                <div class="input-group-append">
+                    <button type="button" class="btn btn-info" (click)="generateRandomGraph()"><i class="fas fa-plus-circle"></i></button>
+                </div>
+            </div>
+        </div>
     </div>
 </div>

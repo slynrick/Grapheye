@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, AfterViewChecked } from '@angular/core';
 import { GraphService } from './graph.service';
 import { graphFromBack } from '../dominio/graph-from-back';
 import * as shape from 'd3-shape';
@@ -12,7 +12,7 @@ import { graphSearch } from '../dominio/graph-search';
 	styleUrls: ['./graph.component.scss']
 })
 export class GraphComponent implements OnInit {
-
+    
     id = '';
     graphFromBack: graphFromBack = new graphFromBack();
     graph: Graph = {nodes: [], edges: []};
@@ -30,7 +30,7 @@ export class GraphComponent implements OnInit {
     backAnswer: boolean = false;
     hasDeepGraph: boolean = false;
     tree = true;
-
+    
 	constructor(private graphService: GraphService) { }
 
 	ngOnInit() {
@@ -38,6 +38,7 @@ export class GraphComponent implements OnInit {
 	}
 
 	getGraph(node: string){
+        this.backAnswer = false;
 		this.graphService.generateGraph(node).subscribe(graph =>{
 			this.graphFromBack = graph;
 			this.buildGraph(this.graph, this.graphFromBack);
@@ -67,6 +68,14 @@ export class GraphComponent implements OnInit {
 
 	updateGraph() {
         this.update$.next(true);
+    }
+
+    cleanGraph(graph: graphFromBack) {
+        this.backAnswer = false
+        this.graphFromBack = graph;
+        this.graph.nodes = [];
+        this.graph.edges = [];
+        this.updateGraph();
     }
 
     atualizaGraph(graph: graphFromBack) {

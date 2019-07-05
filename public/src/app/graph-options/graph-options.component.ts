@@ -1,6 +1,7 @@
 import { Component, OnInit, EventEmitter, Output } from '@angular/core';
 import { Layout } from '@swimlane/ngx-graph';
 import { Subject } from 'rxjs';
+import { graphFromBack } from '../dominio/graph-from-back';
 
 @Component({
     selector: 'og-graph-options',
@@ -11,9 +12,12 @@ export class GraphOptionsComponent implements OnInit {
 
     @Output() center = new EventEmitter<boolean>();
     @Output() update = new EventEmitter<boolean>();
+    @Output() clean = new EventEmitter<graphFromBack>();
+    @Output() random = new EventEmitter<string>();
     @Output() layoutChange = new EventEmitter<string>();
 
     layout: String | Layout = 'dagre';
+    node = '';
     
     layouts = [
         {
@@ -29,10 +33,6 @@ export class GraphOptionsComponent implements OnInit {
           value: 'd3ForceDirected',
         },
       ];
-
-    draggingEnabled = true;
-    enableZoom = true;
-    panningEnabled = true;
 
     constructor() { }
 
@@ -50,6 +50,14 @@ export class GraphOptionsComponent implements OnInit {
 
     updateGraph() {
         this.update.emit(true);
+    }
+
+    generateRandomGraph() {
+        this.random.emit(this.node);
+    }
+
+    cleanGraph() {
+        this.clean.emit(new graphFromBack())
     }
 
 }
